@@ -11,7 +11,6 @@ på skærmen
 Det er muligt at ændre tiden imellem ticks i realtime ved at køre
 (reset! hackaton.timer/ventetid 2000)
 i din REPL
-
 "
 
 (def system (atom {}))
