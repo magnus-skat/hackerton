@@ -2,6 +2,7 @@
   (:require [hackaton.skov :as skov]
             [shams.priority-queue :as pq]
             [hackaton.daemning :as daemning]
+            [hackaton.timer :as timer]
             ))
 
 (def system (atom {}))
@@ -18,11 +19,9 @@
   []
   "Det er denne funktion, som skal startes for at alt kører."
   (swap! system init-system)
+  (.start (Thread. timer/start-timer ))
   (daemning/example)
   )
-
-
-
 
 
 

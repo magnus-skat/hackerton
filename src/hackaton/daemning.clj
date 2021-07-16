@@ -23,16 +23,4 @@
 
 (defn example []
   (add-watch timer/tick :watcher
-             ticker-har-ticket
-             )
-  (Thread/sleep 1000)
-  (swap! timer/tick inc)
-  (Thread/sleep 2000)
-  (swap! timer/tick inc)
-  (Thread/sleep 3000)
-  (swap! timer/tick inc)
-  (Thread/sleep 4000)
-  (swap! timer/tick inc)
-  (Thread/sleep 5000)
-  (swap! timer/tick inc)
-  )
+             ticker-har-ticket))

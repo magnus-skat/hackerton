@@ -11,7 +11,7 @@ andre tråde så abonnerer på via en watcher, og når der er kommet et 'tick', 
 (def ventetid (atom 1000)) ;; Antal millisekunder som timeren skal sove, inden den sendet et nyt tick ud
 
 (defn start-timer
-  [x]
+  []
   (while (< @tick 10000)
     (do
       (Thread/sleep @ventetid)
