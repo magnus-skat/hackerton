@@ -26,7 +26,7 @@ pop vil returnerer den nye kø, så hvis man skal have data ud, skal man huske a
         kø-størrelse 12
         funktion (fn [key atom old-state new-state]
                    (println "kø størrelse:" navn (count @ud-kø))
-                   (println "fejlkø størrelse:" navn (count @ind-kø ))
+                   (println "fejlkø størrelse:" navn (count @ind-kø))
                    (if (< (count @ud-kø) kø-størrelse)
                      (do
                        (if (peek @ind-kø)
@@ -56,35 +56,53 @@ pop vil returnerer den nye kø, så hvis man skal have data ud, skal man huske a
   (let [
         fejl-procent 0.05
         kø-størrelse 12
+        arbejde (atom nil)
 
         funktion (fn [key atom old-state new-state]
                    (println "ud-kø størrelse:" navn (count @ud-kø))
-                   (println "ind-kø størrelse:" navn (count @ind-kø ))
+                   (println "ind-kø størrelse:" navn (count @ind-kø))
+                   (println @arbejde)
+                   (if @arbejde
+                     (let [vent (:vent @arbejde)]
+                       (println "vent" vent)
+                       (if (> vent 1)                       ;; Arbejdet er endnu ikke udført, vent lidt mere.
+                         (do
+                           (println navn "arbejder på " @arbejde)
+                           (swap! arbejde update :vent dec)  ;; Tæl ventetiden ned.
 
-                   (if (< (count @ud-kø) kø-størrelse)
-                     (do
-                       (if (peek @ind-kø)
+                           )
                          (do
                            (let [
-                                 træ (peek @ind-kø)
+                                 træ (:træ arbejde)
                                  _ (println træ)
                                  _ (println (:log træ))
-                                 træ (update træ :log conj {:event "Dæmning 1"
-                                                            :tick new-state
+                                 træ (update træ :log conj {:event      "Dæmning 1"
+                                                            :tick       new-state
                                                             :accesstime (Instant/now)})
                                  ]
-
                              (swap! ud-kø conj træ)
-                             (swap! ind-kø pop!)
+                             (reset! arbejde nil)
                              ))
-                         (do
-                           (println "Queue empty, resting")
-                           )
                          )
                        )
+
                      (do
-                       (println "Køen er fuld!")
-                       (println @ud-kø))
+                       (if (< (count @ud-kø) kø-størrelse)
+                         (do
+                           (if (peek @ind-kø)
+                             (let [
+                                   træ (peek @ind-kø)
+                                   ]
+                               (reset! arbejde {:vent ventetid :træ træ})
+                               (swap! ind-kø pop)
+                               )
+                             (println "Queue empty, resting")
+                             )
+                           )
+                         (do
+                           (println "Køen er fuld!")
+                           (println @ud-kø))
+                         ))
                      ))
         ]
     (add-watch timer/tick :d1 funktion)))
