@@ -47,6 +47,7 @@ pop vil returnerer den nye kø, så hvis man skal have data ud, skal man huske a
                funktion)
     ))
 
+
 (defn ticker-har-ticket
   [key atom old-state new-state]
   (println "Uret har ticket")
@@ -56,6 +57,7 @@ pop vil returnerer den nye kø, så hvis man skal have data ud, skal man huske a
   (println "key" key)
   (println "************************")
   )
+
 
 (defn example []
   (add-watch timer/tick :watcher
