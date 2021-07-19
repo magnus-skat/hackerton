@@ -28,7 +28,8 @@ i din REPL
   "Det er denne funktion, som skal startes for at alt kører."
   (swap! system init-system)
   (.start (Thread. timer/start-timer ))
-  (daemning/example)
+
+  (daemning/skovarbejder 12 "Skovarbejder")
   )
 
 
