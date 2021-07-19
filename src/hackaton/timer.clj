@@ -7,12 +7,11 @@ andre tråde så abonnerer på via en watcher, og når der er kommet et 'tick', 
 "https://www.tutorialspoint.com/clojure/clojure_watchers.htm "
 
 (def tick (atom 0))
-
-(def ventetid (atom 5000)) ;; Antal millisekunder som timeren skal sove, inden den sendet et nyt tick ud
+(def ventetid (atom 1000)) ;; Antal millisekunder som timeren skal sove, inden den sendet et nyt tick ud
 
 (defn start-timer
   []
-  (while (< @tick 10000)
+  (while (< @tick 25)
     (do
       (Thread/sleep @ventetid)
       (swap! tick inc)

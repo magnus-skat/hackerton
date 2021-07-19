@@ -21,38 +21,73 @@ pop vil returnerer den nye kø, så hvis man skal have data ud, skal man huske a
 "
 
 (defn skovarbejder
-  [ventetid navn kø fejl-kø]
+  [_ navn ud-kø ind-kø _]
   (let [
-        id (UUID/randomUUID)
-        kø-størrelse ventetid
-
+        kø-størrelse 12
         funktion (fn [key atom old-state new-state]
-                   (println "kø størrelse:" (count @kø))
-                   (println "fejlkø størrelse:" (count @fejl-kø ))
-                   (if (< (count @kø) kø-størrelse)
+                   (println "kø størrelse:" navn (count @ud-kø))
+                   (println "fejlkø størrelse:" navn (count @ind-kø ))
+                   (if (< (count @ud-kø) kø-størrelse)
                      (do
-                       (if (peek @fejl-kø)
+                       (if (peek @ind-kø)
                          (do
-                           (let [træ (peek @fejl-kø)]
+                           (let [træ (peek @ind-kø)]
                              (println "Gammelt træ " træ)
-                             (swap! kø conj træ)
-                             (swap! fejl-kø pop)
+                             (swap! ud-kø conj træ)
+                             (swap! ind-kø pop)
                              ))
                          (do
-                           (let [træ (hackaton.skov/fæld-træ 0)]
-                             (swap! kø conj træ)
+                           (let [træ (hackaton.skov/fæld-træ 0, new-state)]
+                             (swap! ud-kø conj træ)
                              ))
                          )
                        )
                      (do
                        (println "Køen er fuld!")
-                       (println @kø))
+                       (println @ud-kø))
                      ))
         ]
-
-    (add-watch timer/tick :kø
-               funktion)
+    (add-watch timer/tick :skovarbejderen funktion)
     ))
+
+
+(defn dæmning
+  [ventetid navn ud-kø ind-kø fejl-kø]
+  (let [
+        fejl-procent 0.05
+        kø-størrelse 12
+
+        funktion (fn [key atom old-state new-state]
+                   (println "ud-kø størrelse:" navn (count @ud-kø))
+                   (println "ind-kø størrelse:" navn (count @ind-kø ))
+
+                   (if (< (count @ud-kø) kø-størrelse)
+                     (do
+                       (if (peek @ind-kø)
+                         (do
+                           (let [
+                                 træ (peek @ind-kø)
+                                 _ (println træ)
+                                 _ (println (:log træ))
+                                 træ (update træ :log conj {:event "Dæmning 1"
+                                                            :tick new-state
+                                                            :accesstime (Instant/now)})
+                                 ]
+
+                             (swap! ud-kø conj træ)
+                             (swap! ind-kø pop!)
+                             ))
+                         (do
+                           (println "Queue empty, resting")
+                           )
+                         )
+                       )
+                     (do
+                       (println "Køen er fuld!")
+                       (println @ud-kø))
+                     ))
+        ]
+    (add-watch timer/tick :d1 funktion)))
 
 
 (defn ticker-har-ticket

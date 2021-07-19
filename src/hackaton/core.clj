@@ -14,6 +14,13 @@ i din REPL
 
 (def system (atom {}))
 
+;; For det første skal vi bruge et par køer.
+(def første-kø (atom (queue/a-queue []))) ;; Kø'en der hører til den første dæmning.
+(def anden-kø (atom (queue/a-queue []))) ;; Kø'en der hører til den anden dæmning.
+(def fejl-kø (atom (queue/a-queue []))) ;; Den foreste kø, som alle dæmninger smider en træstamme i, hvis der er en fejl
+(def slut-liste (atom (queue/a-queue []))) ;; Den foreste kø, som alle dæmninger smider en træstamme i, hvis der er en fejl
+;; Er der flere køer skal de navngives og puttes på denne liste.
+
 (defn init-system
   [_]
   {
@@ -25,20 +32,12 @@ i din REPL
 (defn start-system
   []
   "Det er denne funktion, som skal startes for at alt kører."
-  (let [
-        ;; For det første skal vi bruge et par køer.
-        fejl-kø (atom (queue/a-queue []));; Den foreste kø, som alle dæmninger smider en træstamme i, hvis der er en fejl
-        første-kø (atom (queue/a-queue [])) ;; Kø'en der hører til den første dæmning.
-        slut-liste (atom (queue/a-queue [])) ;; Der hvor alt ender når tiden er gået.
-        ;; Er der flere køer skal de navngives og puttes på denne liste.
-       ]
+
   (swap! system init-system)
 
-  (.start (Thread. timer/start-timer ))
+  (.start (Thread. timer/start-timer))
 
-  (daemning/skovarbejder 12 "Skovarbejder" første-kø fejl-kø))
+  (daemning/dæmning 12 "Dæmning 1" slut-liste første-kø, fejl-kø)
+  (daemning/skovarbejder 12 "Skovarbejder" første-kø fejl-kø, nil)
 
   )
-
-
-

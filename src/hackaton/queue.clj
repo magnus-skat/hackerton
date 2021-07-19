@@ -16,5 +16,5 @@
     )
   )
 
-(def min-kø (atom (a-queue [(skov/fæld-træ 1) (skov/fæld-træ 1) (skov/fæld-træ 1) (skov/fæld-træ 1) (skov/fæld-træ 1)])))
+#_(def min-kø (atom (a-queue [(skov/fæld-træ 1 0) (skov/fæld-træ 1 0) (skov/fæld-træ 1 0) (skov/fæld-træ 1 0) (skov/fæld-træ 1 0)])))
 
