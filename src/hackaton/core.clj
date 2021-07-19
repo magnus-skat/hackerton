@@ -1,6 +1,5 @@
 (ns hackaton.core
-  (:require [hackaton.skov :as skov]
-            [shams.priority-queue :as pq]
+  (:require [hackaton.queue :as queue]
             [hackaton.daemning :as daemning]
             [hackaton.timer :as timer]
             ))
@@ -26,10 +25,19 @@ i din REPL
 (defn start-system
   []
   "Det er denne funktion, som skal startes for at alt kører."
+  (let [
+        ;; For det første skal vi bruge et par køer.
+        fejl-kø (atom (queue/a-queue []));; Den foreste kø, som alle dæmninger smider en træstamme i, hvis der er en fejl
+        første-kø (atom (queue/a-queue [])) ;; Kø'en der hører til den første dæmning.
+        slut-liste (atom (queue/a-queue [])) ;; Der hvor alt ender når tiden er gået.
+        ;; Er der flere køer skal de navngives og puttes på denne liste.
+       ]
   (swap! system init-system)
+
   (.start (Thread. timer/start-timer ))
 
-  (daemning/skovarbejder 12 "Skovarbejder")
+  (daemning/skovarbejder 12 "Skovarbejder" første-kø fejl-kø))
+
   )
 
 

@@ -1,6 +1,5 @@
 (ns hackaton.daemning
-  (:require [hackaton.queue :as queue]
-            [hackaton.timer :as timer]
+  (:require [hackaton.timer :as timer]
             )
   (:import (java.util UUID)
            (java.time Instant)
@@ -22,27 +21,35 @@ pop vil returnerer den nye kø, så hvis man skal have data ud, skal man huske a
 "
 
 (defn skovarbejder
-  [ventetid navn]
+  [ventetid navn kø fejl-kø]
   (let [
         id (UUID/randomUUID)
-        kø (atom (queue/a-queue []))
         kø-størrelse ventetid
 
         funktion (fn [key atom old-state new-state]
-                   (println (str navn " er på arbejde"))
+                   (println "kø størrelse:" (count @kø))
+                   (println "fejlkø størrelse:" (count @fejl-kø ))
                    (if (< (count @kø) kø-størrelse)
                      (do
-                       (println "køen er ikke fuld nok")
-                       (println (count @kø))
-                       (let [træ (hackaton.skov/fæld-træ 0)]
-                         (println "træ fældet" træ)
-                         (swap! kø conj træ)
+                       (if (peek @fejl-kø)
+                         (do
+                           (let [træ (peek @fejl-kø)]
+                             (println "Gammelt træ " træ)
+                             (swap! kø conj træ)
+                             (swap! fejl-kø pop)
+                             ))
+                         (do
+                           (let [træ (hackaton.skov/fæld-træ 0)]
+                             (swap! kø conj træ)
+                             ))
                          )
                        )
                      (do
                        (println "Køen er fuld!")
                        (println @kø))
-                     ))]
+                     ))
+        ]
+
     (add-watch timer/tick :kø
                funktion)
     ))
