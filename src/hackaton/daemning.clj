@@ -26,7 +26,7 @@ pop vil returnerer den nye kø, så hvis man skal have data ud, skal man huske a
         kø-størrelse 12
         funktion (fn [key atom old-state new-state]
                    (println "kø størrelse:" navn (count @ud-kø))
-                   (println "fejlkø størrelse:" navn (count @ind-kø ))
+                   (println "fejlkø størrelse:" navn (count @ind-kø))
                    (if (< (count @ud-kø) kø-størrelse)
                      (do
                        (if (peek @ind-kø)
@@ -39,14 +39,10 @@ pop vil returnerer den nye kø, så hvis man skal have data ud, skal man huske a
                          (do
                            (let [træ (hackaton.skov/fæld-træ 0, new-state)]
                              (swap! ud-kø conj træ)
-                             ))
-                         )
-                       )
+                             ))))
                      (do
                        (println "Køen er fuld!")
-                       (println @ud-kø))
-                     ))
-        ]
+                       (println @ud-kø))))]
     (add-watch timer/tick :skovarbejderen funktion)
     ))
 
@@ -59,7 +55,7 @@ pop vil returnerer den nye kø, så hvis man skal have data ud, skal man huske a
 
         funktion (fn [key atom old-state new-state]
                    (println "ud-kø størrelse:" navn (count @ud-kø))
-                   (println "ind-kø størrelse:" navn (count @ind-kø ))
+                   (println "ind-kø størrelse:" navn (count @ind-kø))
 
                    (if (< (count @ud-kø) kø-størrelse)
                      (do
@@ -69,24 +65,17 @@ pop vil returnerer den nye kø, så hvis man skal have data ud, skal man huske a
                                  træ (peek @ind-kø)
                                  _ (println træ)
                                  _ (println (:log træ))
-                                 træ (update træ :log conj {:event "Dæmning 1"
-                                                            :tick new-state
-                                                            :accesstime (Instant/now)})
-                                 ]
+                                 træ (update træ :log conj {:event      "Dæmning 1"
+                                                            :tick       new-state
+                                                            :accesstime (Instant/now)})]
 
                              (swap! ud-kø conj træ)
-                             (swap! ind-kø pop!)
-                             ))
-                         (do
-                           (println "Queue empty, resting")
-                           )
-                         )
-                       )
+                             (swap! ind-kø pop!)))
+
+                         (println "Queue empty, resting")))
                      (do
                        (println "Køen er fuld!")
-                       (println @ud-kø))
-                     ))
-        ]
+                       (println @ud-kø))))]
     (add-watch timer/tick :d1 funktion)))
 
 
