@@ -29,6 +29,17 @@ i din REPL
    :andre-ting                            :som-jeg-har-glemt
    })
 
+(defn log-udput
+  [key atom old-state new-state]
+  (let [output {:fejlkø (count @fejl-kø)
+                :førstekø (count @første-kø)
+                :andenkø (count @anden-kø)
+                :slutliste (count @slut-liste)}]
+  (println "*******************")
+  (println output)
+  (println "*******************")
+  ))
+
 (defn start-system
   []
   "Det er denne funktion, som skal startes for at alt kører."
@@ -36,8 +47,7 @@ i din REPL
   (swap! system init-system)
 
   (.start (Thread. timer/start-timer))
-
+  (add-watch timer/tick :log log-udput)
   (daemning/dæmning 4 "Dæmning 1" slut-liste første-kø, fejl-kø)
   (daemning/skovarbejder 0 "Skovarbejder" første-kø fejl-kø, nil)
-
   )
