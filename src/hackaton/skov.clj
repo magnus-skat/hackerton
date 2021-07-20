@@ -13,9 +13,7 @@
    ;; id er bare måske ikke så vigtig lige nu, men måske senere, kan det bruges til at logge ting.
    ;; RandomUUID burde være god nok til altid genererer et uniksnummer
    :id       (UUID/randomUUID)
-   :starttid (Instant/now)                                  ;; Måske dette skal være et tick og ikke et tidspunkt
    :starttick tick
-   :sluttid  nil
    :sluttick nil
    :log      [
               {:event      "fældet"                         ;; Tænkt som et sted, hvor de forskellige dæmninger skriver hvornår de har håndteret stammen.

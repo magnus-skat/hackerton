@@ -11,7 +11,7 @@ andre tråde så abonnerer på via en watcher, og når der er kommet et 'tick', 
 
 (defn start-timer
   []
-  (while (< @tick 25)
+  (while (< @tick 250)
     (do
       (Thread/sleep @ventetid)
       (swap! tick inc)

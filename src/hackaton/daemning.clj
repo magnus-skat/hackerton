@@ -122,4 +122,4 @@ pop vil returnerer den nye kø, så hvis man skal have data ud, skal man huske a
         kø-størrelse 12
         funktion (skab-daemning-funktion navn ud-kø ind-kø kø-størrelse ventetid fejl-procent)
         ]
-    (add-watch timer/tick :d1 funktion)))
+    (add-watch timer/tick (keyword navn) funktion)))

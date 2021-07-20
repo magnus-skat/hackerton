@@ -17,6 +17,9 @@ i din REPL
 ;; For det første skal vi bruge et par køer.
 (def første-kø (atom (queue/a-queue []))) ;; Kø'en der hører til den første dæmning.
 (def anden-kø (atom (queue/a-queue []))) ;; Kø'en der hører til den anden dæmning.
+(def tredie-kø (atom (queue/a-queue []))) ;; Kø'en der hører til den tredje dæmning.
+(def fjerde-kø (atom (queue/a-queue []))) ;; Kø'en der hører til den fjerde dæmning.
+(def femte-kø (atom (queue/a-queue []))) ;; Kø'en der hører til den femte dæmning.
 (def fejl-kø (atom (queue/a-queue []))) ;; Den foreste kø, som alle dæmninger smider en træstamme i, hvis der er en fejl
 (def slut-liste (atom (queue/a-queue []))) ;; Den foreste kø, som alle dæmninger smider en træstamme i, hvis der er en fejl
 ;; Er der flere køer skal de navngives og puttes på denne liste.
@@ -31,9 +34,13 @@ i din REPL
 
 (defn log-udput
   [key atom old-state new-state]
-  (let [output {:fejlkø (count @fejl-kø)
+  (let [output {:tick @timer/tick
+                :fejlkø (count @fejl-kø)
                 :førstekø (count @første-kø)
                 :andenkø (count @anden-kø)
+                :trediekø (count @tredie-kø)
+                :fjerde (count @fjerde-kø)
+                :femte (count @femte-kø)
                 :slutliste (count @slut-liste)}]
   (println "*******************")
   (println output)
@@ -48,6 +55,10 @@ i din REPL
 
   (.start (Thread. timer/start-timer))
   (add-watch timer/tick :log log-udput)
-  (daemning/dæmning 4 "Dæmning 1" slut-liste første-kø, fejl-kø)
   (daemning/skovarbejder 0 "Skovarbejder" første-kø fejl-kø, nil)
-  )
+  (daemning/dæmning 4 "Dæmning 1" anden-kø første-kø, fejl-kø)
+  (daemning/dæmning 2 "Dæmning 2" tredie-kø anden-kø, fejl-kø)
+  (daemning/dæmning 10 "Dæmning 3" fjerde-kø tredie-kø, fejl-kø)
+  (daemning/dæmning 2 "Dæmning 4" femte-kø fjerde-kø, fejl-kø)
+  (daemning/dæmning 12 "Dæmning 5" slut-liste femte-kø, fejl-kø)
+)
