@@ -97,24 +97,3 @@ pop vil returnerer den nye kø, så hvis man skal have data ud, skal man huske a
         funktion (skab-daemning-funktion navn ud-kø ind-kø kø-størrelse fejl-procent)
         ]
     (add-watch timer/tick :d1 funktion)))
-
-
-(defn ticker-har-ticket
-  [key atom old-state new-state]
-  (println "Uret har ticket")
-  (println "Før værdi" old-state)
-  (println "Ny værdi" new-state)
-  (println "atom" atom)
-  (println "key" key)
-  (println "************************")
-  )
-
-
-(defn example []
-  (add-watch timer/tick :watcher
-             ticker-har-ticket))
-
-(defn start-dæmning []
-  (add-watch timer/tick :kø
-             ticker-har-ticket)
-  )
