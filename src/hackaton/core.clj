@@ -21,7 +21,7 @@ i din REPL
 (def fjerde-kø (atom (queue/a-queue []))) ;; Kø'en der hører til den fjerde dæmning.
 (def femte-kø (atom (queue/a-queue []))) ;; Kø'en der hører til den femte dæmning.
 (def fejl-kø (atom (queue/a-queue []))) ;; Den foreste kø, som alle dæmninger smider en træstamme i, hvis der er en fejl
-(def slut-liste (atom (queue/a-queue []))) ;; Den foreste kø, som alle dæmninger smider en træstamme i, hvis der er en fejl
+(def slut-liste (atom (queue/a-queue []))) ;; Den sidste kø, som alle træstammer havner i
 ;; Er der flere køer skal de navngives og puttes på denne liste.
 
 (defn init-system
@@ -55,10 +55,14 @@ i din REPL
 
   (.start (Thread. timer/start-timer))
   (add-watch timer/tick :log log-udput)
-  (daemning/skovarbejder 0 "Skovarbejder" første-kø fejl-kø, nil)
-  (daemning/dæmning 4 "Dæmning 1" anden-kø første-kø, fejl-kø)
-  (daemning/dæmning 2 "Dæmning 2" tredie-kø anden-kø, fejl-kø)
-  (daemning/dæmning 10 "Dæmning 3" fjerde-kø tredie-kø, fejl-kø)
-  (daemning/dæmning 2 "Dæmning 4" femte-kø fjerde-kø, fejl-kø)
-  (daemning/dæmning 12 "Dæmning 5" slut-liste femte-kø, fejl-kø)
+  (daemning/skovarbejder 0 "Skovarbejder" fejl-kø første-kø nil false)
+  (daemning/dæmning 1 "Dæmning 1" første-kø anden-kø fejl-kø false)
+  (daemning/dæmning 2 "Dæmning 2" anden-kø tredie-kø fejl-kø false)
+  (daemning/dæmning 3 "Dæmning 3" tredie-kø fjerde-kø fejl-kø false)
+  (daemning/dæmning 4 "Dæmning 4" fjerde-kø femte-kø fejl-kø false)
+  (daemning/dæmning 5 "Dæmning 5" femte-kø slut-liste fejl-kø true)
 )
+
+(defn slut-log []
+  (map #(- (:sluttick %) (:starttick %)) @slut-liste)
+  )

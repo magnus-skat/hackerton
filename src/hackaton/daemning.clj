@@ -4,21 +4,6 @@
   (:import (java.util UUID)
            (java.time Instant)
            ))
-"https://www.tutorialspoint.com/clojure/clojure_watchers.htm "
-"https://cljdoc.org/d/shams/priority-queue/0.1.2/doc/readme"
-
-"Dette er en priority-queue som sorterer på de elementer som har en høj error værdi"
-
-"Man kan indsætte i køen med conj som
-
-(def min-kø (conj min-kø (værdi)))
-
-pop vil returnerer den nye kø, så hvis man skal have data ud, skal man huske at peek først.
-
-(peek min-kø)
-
-(def min-kø (pop min-kø))
-"
 
 
 (defn- skab-skovarbejder-funktion
@@ -42,13 +27,12 @@ pop vil returnerer den nye kø, så hvis man skal have data ud, skal man huske a
                      (do
                        (println "Køen er fuld!")
                        (println @ud-kø))))]
-
     funktion
     ))
 
 
 (defn skovarbejder
-  [_ navn ud-kø ind-kø _]
+  [_ navn ind-kø ud-kø _ _]
   (let [
         kø-størrelse 12
         funktion (skab-skovarbejder-funktion navn ud-kø ind-kø kø-størrelse)]
@@ -64,12 +48,12 @@ pop vil returnerer den nye kø, så hvis man skal have data ud, skal man huske a
 
 
 (defn- skab-daemning-funktion
-  [navn ud-kø ind-kø kø-størrelse ventetid fejl-procent]
+  [navn ud-kø ind-kø kø-størrelse ventetid fejl-procent sidste]
   (let [arbejde (atom nil)
         funktion (fn
                    [key atom old-state new-state]
                    (if (nil? @arbejde)
-                     (if (< (count @ud-kø) kø-størrelse)
+                     (if (or sidste (< (count @ud-kø) kø-størrelse))
                        (do
                          (if (peek @ind-kø)
                            (do
@@ -116,10 +100,10 @@ pop vil returnerer den nye kø, så hvis man skal have data ud, skal man huske a
 
 
 (defn dæmning
-  [ventetid navn ud-kø ind-kø fejl-kø]
+  [ventetid navn ind-kø ud-kø fejl-kø sidste]
   (let [
         fejl-procent 0.05
         kø-størrelse 12
-        funktion (skab-daemning-funktion navn ud-kø ind-kø kø-størrelse ventetid fejl-procent)
+        funktion (skab-daemning-funktion navn ud-kø ind-kø kø-størrelse ventetid fejl-procent sidste)
         ]
     (add-watch timer/tick (keyword navn) funktion)))

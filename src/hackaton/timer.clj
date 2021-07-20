@@ -18,3 +18,15 @@ andre tråde så abonnerer på via en watcher, og når der er kommet et 'tick', 
       )
     )
   )
+
+
+(defn langsommere
+  []
+  (swap! @ventetid * 2)
+  )
+
+
+(defn langsommere
+  []
+  (swap! @ventetid / 2)
+  )
