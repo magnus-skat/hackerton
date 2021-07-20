@@ -15,7 +15,8 @@
    :id       (UUID/randomUUID)
    :starttid (Instant/now)                                  ;; Måske dette skal være et tick og ikke et tidspunkt
    :starttick tick
-   :sluttid  (Instant/now)                                  ;; Det samme her.
+   :sluttid  nil
+   :sluttick nil
    :log      [
               {:event      "fældet"                         ;; Tænkt som et sted, hvor de forskellige dæmninger skriver hvornår de har håndteret stammen.
                :tick       tick

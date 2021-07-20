@@ -37,7 +37,7 @@ i din REPL
 
   (.start (Thread. timer/start-timer))
 
-  (daemning/dæmning 12 "Dæmning 1" slut-liste første-kø, fejl-kø)
-  (daemning/skovarbejder 12 "Skovarbejder" første-kø fejl-kø, nil)
+  (daemning/dæmning 4 "Dæmning 1" slut-liste første-kø, fejl-kø)
+  (daemning/skovarbejder 0 "Skovarbejder" første-kø fejl-kø, nil)
 
   )

@@ -55,35 +55,61 @@ pop vil returnerer den nye kø, så hvis man skal have data ud, skal man huske a
     (add-watch timer/tick :skovarbejderen funktion)
     ))
 
+(defn- opdater-log
+  [træ besked]
+  (let [træ (update træ :log conj besked)]
+    træ
+    )
+  )
+
+
 (defn- skab-daemning-funktion
-  [navn ud-kø ind-kø kø-størrelse fejl-procent]
-  (let [funktion (fn
+  [navn ud-kø ind-kø kø-størrelse ventetid fejl-procent]
+  (let [arbejde (atom nil)
+        funktion (fn
                    [key atom old-state new-state]
-                   (println "udkø størrelse:" navn (count @ud-kø))
-                   (println "indkø størrelse:" navn (count @ind-kø))
-                   (if (< (count @ud-kø) kø-størrelse)
+                   (if (nil? @arbejde)
+                     (if (< (count @ud-kø) kø-størrelse)
+                       (do
+                         (if (peek @ind-kø)
+                           (do
+                             (let [
+                                   træ (peek @ind-kø)       ;; Find det næste træ
+                                   _ (swap! ind-kø pop)     ;; Fjern det fra køen.
+                                   træ (opdater-log træ {:event      (str navn " arbejde startet")
+                                                         :tick       new-state
+                                                         :accesstime (Instant/now)})
+                                   ]
+                               (reset! arbejde {:ventetid ventetid
+                                                :træ      træ})
+
+                               ))
+                           (println "Queue empty, resting")))
+                       (do
+                         (println "Køen er fuld!")
+                         (println @ud-kø))
+                       )
                      (do
-                       (if (peek @ind-kø)
+                       ;; Arbejde er not nil
+                       (if (< 0 (:ventetid @arbejde))
                          (do
-                           (let [
-                                 træ (peek @ind-kø)
-                                 _ (println træ)
-                                 _ (println (:log træ))
+                           (println "Vi arbejder på " @arbejde)
+                           (swap! arbejde update :ventetid dec) ;; Sæt ventetiden ned
+                           )
 
-                                 træ (update træ :log conj {:event      navn
-                                                            :tick       new-state
-                                                            :accesstime (Instant/now)})
-                                 ]
+                         (let [
+                               træ (:træ @arbejde)
+                               træ (assoc træ :sluttick new-state)
+                               træ (opdater-log træ {:event      (str navn " arbejde sluttet")
+                                                     :tick       new-state
+                                                     :accesstime (Instant/now)})
+                               ]
+                           (println "Working on " træ)
 
-                             (swap! ud-kø conj træ)
-                             (swap! ind-kø pop)
-                             ))
-                         (println "Queue empty, resting")))
-                     (do
-                       (println "Køen er fuld!")
-                       (println @ud-kø))
-                     )
-                   )]
+                           (swap! ud-kø conj træ)
+                           (reset! arbejde nil)
+                           )))
+                     ))]
     funktion
     )
   )
@@ -94,6 +120,6 @@ pop vil returnerer den nye kø, så hvis man skal have data ud, skal man huske a
   (let [
         fejl-procent 0.05
         kø-størrelse 12
-        funktion (skab-daemning-funktion navn ud-kø ind-kø kø-størrelse fejl-procent)
+        funktion (skab-daemning-funktion navn ud-kø ind-kø kø-størrelse ventetid fejl-procent)
         ]
     (add-watch timer/tick :d1 funktion)))
