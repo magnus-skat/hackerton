@@ -20,72 +20,75 @@ pop vil returnerer den nye kø, så hvis man skal have data ud, skal man huske a
 (def min-kø (pop min-kø))
 "
 
+(defn- skovarbejder-funktion
+  [key atom old-state new-state]
+  (println "kø størrelse:" navn (count @ud-kø))
+  (println "fejlkø størrelse:" navn (count @ind-kø ))
+  (if (< (count @ud-kø) kø-størrelse)
+    (do
+      (if (peek @ind-kø)
+        (do
+          (let [træ (peek @ind-kø)]
+            (println "Gammelt træ " træ)
+            (swap! ud-kø conj træ)
+            (swap! ind-kø pop)
+            ))
+        (do
+          (let [træ (hackaton.skov/fæld-træ 0, new-state)]
+            (swap! ud-kø conj træ)
+            ))
+        )
+      )
+    (do
+      (println "Køen er fuld!")
+      (println @ud-kø))))
+
+
 (defn skovarbejder
   [_ navn ud-kø ind-kø _]
   (let [
         kø-størrelse 12
-        funktion (fn [key atom old-state new-state]
-                   (println "kø størrelse:" navn (count @ud-kø))
-                   (println "fejlkø størrelse:" navn (count @ind-kø ))
-                   (if (< (count @ud-kø) kø-størrelse)
-                     (do
-                       (if (peek @ind-kø)
-                         (do
-                           (let [træ (peek @ind-kø)]
-                             (println "Gammelt træ " træ)
-                             (swap! ud-kø conj træ)
-                             (swap! ind-kø pop)
-                             ))
-                         (do
-                           (let [træ (hackaton.skov/fæld-træ 0, new-state)]
-                             (swap! ud-kø conj træ)
-                             ))
-                         )
-                       )
-                     (do
-                       (println "Køen er fuld!")
-                       (println @ud-kø))
-                     ))
-        ]
+        funktion skovarbejder-funktion]
     (add-watch timer/tick :skovarbejderen funktion)
     ))
 
+(defn- dæmning-funktion
+  [key atom old-state new-state]
+  (println "ud-kø størrelse:" navn (count @ud-kø))
+  (println "ind-kø størrelse:" navn (count @ind-kø ))
+
+  (if (< (count @ud-kø) 12)
+    (do
+      (if (peek @ind-kø)
+        (do
+          (let [
+                træ (peek @ind-kø)
+                _ (println træ)
+                _ (println (:log træ))
+                træ (update træ :log conj {:event "Dæmning 1"
+                                           :tick new-state
+                                           :accesstime (Instant/now)})
+                ]
+
+            (swap! ud-kø conj træ)
+            (swap! ind-kø pop!)
+            ))
+        (do
+          (println "Queue empty, resting")
+          )
+        )
+      )
+    (do
+      (println "Køen er fuld!")
+      (println @ud-kø))
+    ))
 
 (defn dæmning
   [ventetid navn ud-kø ind-kø fejl-kø]
   (let [
         fejl-procent 0.05
-        kø-størrelse 12
 
-        funktion (fn [key atom old-state new-state]
-                   (println "ud-kø størrelse:" navn (count @ud-kø))
-                   (println "ind-kø størrelse:" navn (count @ind-kø ))
-
-                   (if (< (count @ud-kø) kø-størrelse)
-                     (do
-                       (if (peek @ind-kø)
-                         (do
-                           (let [
-                                 træ (peek @ind-kø)
-                                 _ (println træ)
-                                 _ (println (:log træ))
-                                 træ (update træ :log conj {:event "Dæmning 1"
-                                                            :tick new-state
-                                                            :accesstime (Instant/now)})
-                                 ]
-
-                             (swap! ud-kø conj træ)
-                             (swap! ind-kø pop!)
-                             ))
-                         (do
-                           (println "Queue empty, resting")
-                           )
-                         )
-                       )
-                     (do
-                       (println "Køen er fuld!")
-                       (println @ud-kø))
-                     ))
+        funktion dæmning-funktion
         ]
     (add-watch timer/tick :d1 funktion)))
 
