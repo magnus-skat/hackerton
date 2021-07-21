@@ -19,6 +19,8 @@ andre tråde så abonnerer på via en watcher, og når der er kommet et 'tick', 
     )
   )
 
+;;; Disse tre funktioner, ændre tiden mellem ticks. Kan kaldes fra REPL, med
+;; (timer/langsomt) Virker også når systemet kører.
 
 (defn langsomt
   []
@@ -33,11 +35,4 @@ andre tråde så abonnerer på via en watcher, og når der er kommet et 'tick', 
 (defn normal
   []
   (reset! ventetid 1000)
-  )
-
-
-
-(defn langsommere
-  []
-  (swap! @ventetid / 2)
   )
