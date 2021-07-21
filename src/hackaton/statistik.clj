@@ -4,17 +4,16 @@
 
 "Namespace til at håndterer statistik håndteringen. "
 
+(defn average [coll]
+  (if (= 0 (count coll))
+    0
+    (/ (reduce + coll) (count coll))))
 
-(defn init_statistik [køer dæmninger]
-
+(defn træ-alder [træ]
+  (- (:sluttick træ) (:starttick træ))
   )
 
+(defn beregn-gennemsnit [kollektion antal]
+  (average (map træ-alder (take antal kollektion)
+  )))
 
-(defn kør-statistik
-  [key atom old_value new_value]
-  (let [
-        value {
-               :førstekø
-               }
-        ])
-  )

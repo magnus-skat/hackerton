@@ -9,8 +9,6 @@
 (defn- skab-skovarbejder-funktion
   [navn ud-kø ind-kø kø-størrelse]
   (let [funktion (fn [key atom old-state new-state]
-                   (println "udkø størrelse:" navn (count @ud-kø))
-                   (println "indkø størrelse:" navn (count @ind-kø))
                    (if (< (count @ud-kø) kø-størrelse)
                      (do
                        (if (peek @ind-kø)
@@ -30,7 +28,6 @@
     funktion
     ))
 
-
 (defn skovarbejder
   [_ navn ind-kø ud-kø _ _]
   (let [
@@ -45,7 +42,6 @@
     træ
     )
   )
-
 
 (defn- skab-daemning-funktion
   [navn ud-kø ind-kø kø-størrelse ventetid fejl-procent sidste]
