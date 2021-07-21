@@ -52,6 +52,12 @@
   (let [arbejde (atom nil)
         funktion (fn
                    [key atom old-state new-state]
+                   "agents skal have fire argumenter.
+                    key er navnet som den fik ved oprettelsen
+                    atom, atomeet som er ændret
+                    old-state, den gamle værdi
+                    new-state den nye værdi
+                   "
                    (if (nil? @arbejde)
                      (if (or sidste (< (count @ud-kø) kø-størrelse))
                        (do
@@ -77,7 +83,7 @@
                        ;; Arbejde er not nil
                        (if (< 0 (:ventetid @arbejde))
                          (do
-                           (println "Vi arbejder på " @arbejde)
+                           (println navn " arbejder på " @arbejde)
                            (swap! arbejde update :ventetid dec) ;; Sæt ventetiden ned
                            )
 
@@ -98,9 +104,8 @@
     )
   )
 
-
 (defn dæmning
-  [ventetid navn ind-kø ud-kø fejl-kø sidste]
+  [{:keys [ventetid navn ind-kø ud-kø fejl-kø sidste]}]
   (let [
         fejl-procent 0.05
         kø-størrelse 12
