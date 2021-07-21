@@ -27,49 +27,49 @@ i din REPL
 (defn init-system
   [_]
   {
-   :ventetid-mellem-ticks-i-millisekunder 1000              ;; Bliver ikke brugt lige nu
-   :køer                [første-kø anden-kø tredie-kø fjerde-kø femte-kø fejl-kø slut-liste]
-   :dæmninger                             [{
-                                            :navn     "Dæmning1"
-                                            :ventetid 1
-                                            :ind-kø   første-kø
-                                            :ud-kø    anden-kø
-                                            :fejlkø   fejl-kø
-                                            :sidste   false
-                                            }
-                                           {
-                                            :navn     "Dæmning2"
-                                            :ventetid 3
-                                            :ind-kø   anden-kø
-                                            :ud-kø    tredie-kø
-                                            :fejlkø   fejl-kø
-                                            :sidste   false
-                                            }
-                                           {
-                                            :navn     "Dæmning3"
-                                            :ventetid 2
-                                            :ind-kø   tredie-kø
-                                            :ud-kø    fjerde-kø
-                                            :fejlkø   fejl-kø
-                                            :sidste   false
-                                            }
-                                           {
-                                            :navn     "Dæmning4"
-                                            :ventetid 5
-                                            :ind-kø   fjerde-kø
-                                            :ud-kø    femte-kø
-                                            :fejlkø   fejl-kø
-                                            :sidste   false
-                                            }
-                                           {
-                                            :navn     "Dæmning5"
-                                            :ventetid 2
-                                            :ind-kø   femte-kø
-                                            :ud-kø    slut-liste
-                                            :fejlkø   fejl-kø
-                                            :sidste   true
-                                            }]
-   :andre-ting                            :som-jeg-har-glemt
+
+   :køer       [første-kø anden-kø tredie-kø fjerde-kø femte-kø fejl-kø slut-liste]
+   :dæmninger  [{
+                 :navn     "Dæmning1"
+                 :ventetid 1
+                 :ind-kø   første-kø
+                 :ud-kø    anden-kø
+                 :fejlkø   fejl-kø
+                 :sidste   false
+                 }
+                {
+                 :navn     "Dæmning2"
+                 :ventetid 3
+                 :ind-kø   anden-kø
+                 :ud-kø    tredie-kø
+                 :fejlkø   fejl-kø
+                 :sidste   false
+                 }
+                {
+                 :navn     "Dæmning3"
+                 :ventetid 2
+                 :ind-kø   tredie-kø
+                 :ud-kø    fjerde-kø
+                 :fejlkø   fejl-kø
+                 :sidste   false
+                 }
+                {
+                 :navn     "Dæmning4"
+                 :ventetid 5
+                 :ind-kø   fjerde-kø
+                 :ud-kø    femte-kø
+                 :fejlkø   fejl-kø
+                 :sidste   false
+                 }
+                {
+                 :navn     "Dæmning5"
+                 :ventetid 2
+                 :ind-kø   femte-kø
+                 :ud-kø    slut-liste
+                 :fejlkø   fejl-kø
+                 :sidste   true
+                 }]
+   :andre-ting :som-jeg-har-glemt
    })
 
 (defn log-udput
