@@ -13,7 +13,9 @@
   (- (:sluttick træ) (:starttick træ))
   )
 
-(defn beregn-gennemsnit [kollektion antal]
-  (average (map træ-alder (take antal kollektion)
-  )))
+(defn beregn-gennemsnit
+  ([kollektion]
+   (average (map træ-alder kollektion)))
+  ([kollektion antal]
+   (average (map træ-alder (take antal kollektion)))))
 
