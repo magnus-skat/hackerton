@@ -20,10 +20,21 @@ andre tråde så abonnerer på via en watcher, og når der er kommet et 'tick', 
   )
 
 
-(defn langsommere
+(defn langsomt
   []
-  (swap! @ventetid * 2)
+  (reset! ventetid 5000)
   )
+
+(defn hurtigt
+  []
+  (reset! ventetid 500)
+  )
+
+(defn normal
+  []
+  (reset! ventetid 1000)
+  )
+
 
 
 (defn langsommere
