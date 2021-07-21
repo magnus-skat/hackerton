@@ -2,6 +2,7 @@
   (:require [hackaton.queue :as queue]
             [hackaton.daemning :as daemning]
             [hackaton.timer :as timer]
+            [hackaton.statistik :as statistik]
             ))
 
 "For at kører dette på dit eget system, så skal du starte en REPL og så kører
@@ -21,7 +22,7 @@ i din REPL
 (def fjerde-kø (atom (queue/a-queue [])))                   ;; Kø'en der hører til den fjerde dæmning.
 (def femte-kø (atom (queue/a-queue [])))                    ;; Kø'en der hører til den femte dæmning.
 (def fejl-kø (atom (queue/a-queue [])))                     ;; Den foreste kø, som alle dæmninger smider en træstamme i, hvis der er en fejl
-(def slut-liste (atom (queue/a-queue [])))                  ;; Den sidste kø, som alle træstammer havner i
+(def slut-liste (atom (list)))                              ;; Den sidste kø, som alle træstammer havner i
 ;; Er der flere køer skal de navngives og puttes på denne liste.
 
 (defn init-system
@@ -74,14 +75,18 @@ i din REPL
 
 (defn log-udput
   [key atom old-state new-state]
-  (let [output {:tick      @timer/tick
-                :fejlkø    (count @fejl-kø)
-                :førstekø  (count @første-kø)
-                :andenkø   (count @anden-kø)
-                :trediekø  (count @tredie-kø)
-                :fjerde    (count @fjerde-kø)
-                :femte     (count @femte-kø)
-                :slutliste (count @slut-liste)}]
+  (let [output {:tick @timer/tick
+                :avg  (int (statistik/beregn-gennemsnit @slut-liste 10))
+                :køer {
+                       :fejl-kø    {:antal (count @fejl-kø)}
+                       :første-kø  {:antal (count @første-kø)}
+                       :anden-kø   {:antal (count @anden-kø)}
+                       :tredie-kø  {:antal (count @tredie-kø)}
+                       :fjerde-kø  {:antal (count @fjerde-kø)}
+                       :femte-kø   {:antal (count @femte-kø)}
+                       :slut-liste {:antal (count @slut-liste)}}
+                }
+        ]
     (println "*******************")
     (println output)
     (println "*******************")
@@ -98,8 +103,4 @@ i din REPL
 
   (daemning/skovarbejder 0 "Skovarbejder" fejl-kø første-kø nil false)
   (map daemning/dæmning (:dæmninger @system))
-  )
-
-(defn slut-log []
-  (map #(- (:sluttick %) (:starttick %)) @slut-liste)
   )
