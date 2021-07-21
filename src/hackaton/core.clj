@@ -80,10 +80,16 @@ i din REPL
                 :køer {
                        :fejl-kø    {:antal (count @fejl-kø)}
                        :første-kø  {:antal (count @første-kø)}
-                       :anden-kø   {:antal (count @anden-kø)}
-                       :tredie-kø  {:antal (count @tredie-kø)}
-                       :fjerde-kø  {:antal (count @fjerde-kø)}
-                       :femte-kø   {:antal (count @femte-kø)}
+                       :anden-kø   {
+                                    :antal (count @anden-kø)
+                                    :avg (statistik/beregn-gennemsnit @anden-kø)
+                                    }
+                       :tredie-kø  {:antal (count @tredie-kø)
+                                    :avg (statistik/beregn-gennemsnit @tredie-kø)}
+                       :fjerde-kø  {:antal (count @fjerde-kø)
+                                    :avg (statistik/beregn-gennemsnit @fjerde-kø)}
+                       :femte-kø   {:antal (count @femte-kø)
+                                    :avg (statistik/beregn-gennemsnit @femte-kø)}
                        :slut-liste {:antal (count @slut-liste)}}
                 }
         ]
