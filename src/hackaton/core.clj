@@ -144,5 +144,5 @@ i din REPL
 
   (add-watch timer/tick :log log-udput)
   (daemning/skovarbejder 0 "Skovarbejder" fejl-kø første-kø nil false)
-  (map daemning/dæmning (:dæmninger @system))
+  (map daemning/byg-dæmning! (:dæmninger @system))
   )

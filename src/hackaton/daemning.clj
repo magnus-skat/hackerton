@@ -47,6 +47,8 @@
   (<= (rand-int 100) fejl-procent))
 
 (defn- arbejd
+  "Det er her selve arbejdet udføres på et træ Hvis tiden er gået smides det på
+   den næste kø, ellers venter vi lidt længere"
   [{:keys [navn ud-kø fejl-kø fejl-liste fejl-procent]} arbejde new-state]
   (if (< 0 (:ventetid @arbejde))
     (do
@@ -80,13 +82,14 @@
                                   :tick       new-state
                                   :accesstime (Instant/now)})
             ]
-        (swap! ud-kø conj træ)
+        (swap! ind-kø pop)     ;; Fjern træet fra ind-køen.
+        (swap! ud-kø conj træ) ;; Tilføj det til næste kø
+
         (reset! arbejde nil)
-        ))
-    )
-  )
+        ))))
 
 (defn- skab-daemning-funktion
+  "Returnerer den funktion, som skal køres som en watcher"
   [{:keys [navn ud-kø ind-kø ventetid sidste? kø-størrelse] :as dæmning}]
   (let [arbejde (atom nil)
         funktion (fn
@@ -104,7 +107,7 @@
                            (do
                              (let [
                                    træ (peek @ind-kø)       ;; Find det næste træ
-                                   _ (swap! ind-kø pop)     ;; Fjern det fra køen.
+
                                    træ (opdater-log træ {:event      (str navn " arbejde startet")
                                                          :tick       new-state
                                                          :accesstime (Instant/now)})
@@ -127,9 +130,18 @@
     )
   )
 
-(defn dæmning
+(defn byg-dæmning!
   [dæmning]
   (let [
         funktion (skab-daemning-funktion dæmning)
         ]
     (add-watch timer/tick (keyword (:navn dæmning)) funktion)))
+
+(defn update-ventetid!
+  "Updaterer ventetiden/arbejdstiden for en bestemt dæmning"
+  [system nummer ventetid]
+  (timer/start-stop) ;; stop tiden for en sikkerheds skyld
+  (swap! system assoc-in [:dæmninger nummer :ventetid] ventetid) ;; opdater ventetiden på dæmningen
+  (byg-dæmning! ((@system :dæmninger) nummer)) ;; gen-start funktionen der kører på dæmningen
+  (timer/start-stop) ;; Start tiden igen
+  )
