@@ -7,16 +7,14 @@
 
 
 (defn- skab-skovarbejder-funktion
-  [navn ud-kø ind-kø kø-størrelse]
-  (let [funktion (fn [key atom old-state new-state]
+  [_ ud-kø ind-kø kø-størrelse]
+  (let [funktion (fn [_ _ _ new-state]
                    (if (< (count @ud-kø) kø-størrelse)
                      (do
                        (if (peek @ind-kø)
                          (do
                            (let [træ (peek @ind-kø)
                                  træ (assoc træ :error 0)]
-
-                             (println "Gammelt træ " træ)
 
                              (swap! ud-kø conj træ)
                              (swap! ind-kø pop)
@@ -25,9 +23,7 @@
                            (let [træ (hackaton.skov/fæld-træ 0, new-state)]
                              (swap! ud-kø conj træ)
                              ))))
-                     (do
-                       (println "Køen er fuld!")
-                       (println @ud-kø))))]
+                     (println "Køen er fuld!")))]
     funktion
     ))
 
@@ -51,7 +47,7 @@
   (<= (rand-int 100) fejl-procent))
 
 (defn- arbejd
-  [{:keys [navn ud-kø fejl-kø fejl-liste fejl-procent]} arbejde new-state ]
+  [{:keys [navn ud-kø fejl-kø fejl-liste fejl-procent]} arbejde new-state]
   (if (< 0 (:ventetid @arbejde))
     (do
       (println navn " arbejder på " @arbejde)
@@ -91,7 +87,7 @@
   )
 
 (defn- skab-daemning-funktion
-  [{:keys [navn ud-kø ind-kø ventetid sidste? kø-størrelse] :as dæmning} ]
+  [{:keys [navn ud-kø ind-kø ventetid sidste? kø-størrelse] :as dæmning}]
   (let [arbejde (atom nil)
         funktion (fn
                    [key atom old-state new-state]
