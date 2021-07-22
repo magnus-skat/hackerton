@@ -37,7 +37,9 @@ i din REPL
                  :ud-kø      anden-kø
                  :fejl-kø    fejl-kø
                  :fejl-liste fejl-liste
-                 :sidste     false
+                 :sidste?     false
+                 :fejl-procent 5
+                 :kø-størrelse 12
                  }
                 {
                  :navn       "Dæmning2"
@@ -46,7 +48,9 @@ i din REPL
                  :ud-kø      tredie-kø
                  :fejl-kø    fejl-kø
                  :fejl-liste fejl-liste
-                 :sidste     false
+                 :fejl-procent 5
+                 :kø-størrelse 12
+                 :sidste?     false
                  }
                 {
                  :navn       "Dæmning3"
@@ -55,7 +59,9 @@ i din REPL
                  :ud-kø      fjerde-kø
                  :fejl-kø    fejl-kø
                  :fejl-liste fejl-liste
-                 :sidste     false
+                 :fejl-procent 5
+                 :kø-størrelse 12
+                 :sidste?     false
                  }
                 {
                  :navn       "Dæmning4"
@@ -64,7 +70,9 @@ i din REPL
                  :ud-kø      femte-kø
                  :fejl-kø    fejl-kø
                  :fejl-liste fejl-liste
-                 :sidste     false
+                 :fejl-procent 5
+                 :kø-størrelse 12
+                 :sidste?     false
                  }
                 {
                  :navn       "Dæmning5"
@@ -73,7 +81,9 @@ i din REPL
                  :ud-kø      slut-liste
                  :fejl-kø    fejl-kø
                  :fejl-liste fejl-liste
-                 :sidste     true
+                 :fejl-procent 5
+                 :kø-størrelse 12
+                 :sidste?     true
                  }]
 
    :andre-ting :som-jeg-har-glemt

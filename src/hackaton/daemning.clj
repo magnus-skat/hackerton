@@ -51,7 +51,7 @@
   (<= (rand-int 100) fejl-procent))
 
 (defn- arbejd
-  [arbejde navn new-state ud-kø fejl-procent fejl-kø fejl-liste]
+  [{:keys [navn ud-kø fejl-kø fejl-liste fejl-procent]} arbejde new-state ]
   (if (< 0 (:ventetid @arbejde))
     (do
       (println navn " arbejder på " @arbejde)
@@ -91,7 +91,7 @@
   )
 
 (defn- skab-daemning-funktion
-  [navn ud-kø ind-kø kø-størrelse ventetid fejl-procent sidste fejl-kø fejl-liste]
+  [{:keys [navn ud-kø ind-kø ventetid sidste? kø-størrelse] :as dæmning} ]
   (let [arbejde (atom nil)
         funktion (fn
                    [key atom old-state new-state]
@@ -102,7 +102,7 @@
                     new-state den nye værdi
                    "
                    (if (nil? @arbejde)
-                     (if (or sidste (< (count @ud-kø) kø-størrelse))
+                     (if (or sidste? (< (count @ud-kø) kø-størrelse))
                        (do
                          (if (peek @ind-kø)
                            (do
@@ -124,7 +124,7 @@
                        )
                      (do
                        ;; Arbejde er not nil
-                       (arbejd arbejde navn new-state ud-kø fejl-procent fejl-kø fejl-liste)
+                       (arbejd dæmning arbejde new-state)
                        )
                      ))]
     funktion
@@ -132,10 +132,8 @@
   )
 
 (defn dæmning
-  [{:keys [ventetid navn ind-kø ud-kø fejl-kø sidste fejl-liste]}]
+  [dæmning]
   (let [
-        fejl-procent 5
-        kø-størrelse 12
-        funktion (skab-daemning-funktion navn ud-kø ind-kø kø-størrelse ventetid fejl-procent sidste fejl-kø fejl-liste)
+        funktion (skab-daemning-funktion dæmning)
         ]
-    (add-watch timer/tick (keyword navn) funktion)))
+    (add-watch timer/tick (keyword (:navn dæmning)) funktion)))
