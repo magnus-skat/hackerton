@@ -137,6 +137,7 @@
         ]
     (add-watch timer/tick (keyword (:navn dæmning)) funktion)))
 
+
 (defn update-ventetid!
   "Updaterer ventetiden/arbejdstiden for en bestemt dæmning"
   [system nummer ventetid]
@@ -145,3 +146,17 @@
   (byg-dæmning! ((@system :dæmninger) nummer)) ;; gen-start funktionen der kører på dæmningen
   (timer/start-stop) ;; Start tiden igen
   )
+
+
+(defn tilføj-dæmning!
+  [dæmning system]
+
+  (timer/start-stop) ;; stop uret, så der ikke kommer konflikter
+  (def antal-dæmninger (:antal-dæmninger @system))
+  (def sidste-navn (:navn (last (:dæmninger @system))))
+  (Thread/sleep @timer/ventetid) ;; vent på at alle tråde er færdige
+  (remove-watch timer/tick (keyword sidste-navn)) ;; Stop den gamle function som kørte
+
+  (swap! system update-in [:dæmninger (- antal-dæmninger 1) :sidste?] not) ;;
+  )
+
