@@ -13,8 +13,11 @@
                      (do
                        (if (peek @ind-kø)
                          (do
-                           (let [træ (peek @ind-kø)]
+                           (let [træ (peek @ind-kø)
+                                 træ (assoc træ :error 0)]
+
                              (println "Gammelt træ " træ)
+
                              (swap! ud-kø conj træ)
                              (swap! ind-kø pop)
                              ))
@@ -43,8 +46,52 @@
     )
   )
 
+(defn- fejl?
+  [fejl-procent]
+  (<= (rand-int 100) fejl-procent))
+
+(defn- arbejd
+  [arbejde navn new-state ud-kø fejl-procent fejl-kø fejl-liste]
+  (if (< 0 (:ventetid @arbejde))
+    (do
+      (println navn " arbejder på " @arbejde)
+      (swap! arbejde update :ventetid dec)                  ;; Sæt ventetiden ned
+      )
+
+    (if (fejl? fejl-procent)
+      (
+        let [
+             træ (:træ @arbejde)
+             træ (assoc træ :sluttick new-state)
+             træ (assoc træ :error 10)
+             træ (opdater-log træ {:event      (str navn " arbejdet fejlede")
+                                   :tick       new-state
+                                   :accesstime (Instant/now)})
+             ]
+        (println "Arbejdet fejlet")
+        (swap! fejl-kø conj træ)
+        (swap! fejl-liste conj {
+                                :tick new-state
+                                :træ  (:id træ)
+                                })
+
+        (reset! arbejde nil)
+        )
+      (let [
+            træ (:træ @arbejde)
+            træ (assoc træ :sluttick new-state)
+            træ (opdater-log træ {:event      (str navn " arbejde sluttet")
+                                  :tick       new-state
+                                  :accesstime (Instant/now)})
+            ]
+        (swap! ud-kø conj træ)
+        (reset! arbejde nil)
+        ))
+    )
+  )
+
 (defn- skab-daemning-funktion
-  [navn ud-kø ind-kø kø-størrelse ventetid fejl-procent sidste]
+  [navn ud-kø ind-kø kø-størrelse ventetid fejl-procent sidste fejl-kø fejl-liste]
   (let [arbejde (atom nil)
         funktion (fn
                    [key atom old-state new-state]
@@ -73,38 +120,22 @@
                            (println "Queue empty, resting")))
                        (do
                          (println "Køen er fuld!")
-                         (println @ud-kø))
+                         )
                        )
                      (do
                        ;; Arbejde er not nil
-                       (if (< 0 (:ventetid @arbejde))
-                         (do
-                           (println navn " arbejder på " @arbejde)
-                           (swap! arbejde update :ventetid dec) ;; Sæt ventetiden ned
-                           )
-
-                         (let [
-                               træ (:træ @arbejde)
-                               træ (assoc træ :sluttick new-state)
-                               træ (opdater-log træ {:event      (str navn " arbejde sluttet")
-                                                     :tick       new-state
-                                                     :accesstime (Instant/now)})
-                               ]
-                           (println "Working on " træ)
-
-                           (swap! ud-kø conj træ)
-                           (reset! arbejde nil)
-                           )))
+                       (arbejd arbejde navn new-state ud-kø fejl-procent fejl-kø fejl-liste)
+                       )
                      ))]
     funktion
     )
   )
 
 (defn dæmning
-  [{:keys [ventetid navn ind-kø ud-kø fejl-kø sidste]}]
+  [{:keys [ventetid navn ind-kø ud-kø fejl-kø sidste fejl-liste]}]
   (let [
-        fejl-procent 0.05
+        fejl-procent 5
         kø-størrelse 12
-        funktion (skab-daemning-funktion navn ud-kø ind-kø kø-størrelse ventetid fejl-procent sidste)
+        funktion (skab-daemning-funktion navn ud-kø ind-kø kø-størrelse ventetid fejl-procent sidste fejl-kø fejl-liste)
         ]
     (add-watch timer/tick (keyword navn) funktion)))
