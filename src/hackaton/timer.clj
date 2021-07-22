@@ -7,20 +7,31 @@ andre tråde så abonnerer på via en watcher, og når der er kommet et 'tick', 
 "https://www.tutorialspoint.com/clojure/clojure_watchers.htm "
 
 (def tick (atom 0))
-(def ventetid (atom 1000)) ;; Antal millisekunder som timeren skal sove, inden den sendet et nyt tick ud
+(def pause (atom false))                                    ;; Hvis True, skal timere bare noppe
+(def ventetid (atom 1000))                                  ;; Antal millisekunder som timeren skal sove, inden den sendet et nyt tick ud
 
 (defn start-timer
-  []
-  (while (< @tick 250)
-    (do
-      (Thread/sleep @ventetid)
-      (swap! tick inc)
-      )
-    )
+  ([] (start-timer 250))
+  ([stop-tick]
+   (while (< @tick stop-tick)
+     (if @pause                                             ;; It's time for a nop.
+       (Thread/sleep 1000)
+       (do
+         (Thread/sleep @ventetid)
+         (swap! tick inc)
+         )
+       )
+     ))
   )
 
 ;;; Disse tre funktioner, ændre tiden mellem ticks. Kan kaldes fra REPL, med
 ;; (timer/langsomt) Virker også når systemet kører.
+
+(defn start-stop
+  []
+  (swap! pause not)
+  (println "Starter eller stopper timeren")
+  )
 
 (defn langsomt
   []

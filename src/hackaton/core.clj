@@ -29,7 +29,7 @@ i din REPL
   [_]
   {
 
-   :køer       [første-kø anden-kø tredie-kø fjerde-kø femte-kø fejl-kø slut-liste]
+   :køer       [{:navn "første-kø" :kø første-kø} {:navn "anden-kø" :kø anden-kø} {:kø tredie-kø :navn "tredie-kø"} { :navn "fjerde-kø" :kø fjerde-kø} { :navn "femte-kø" :kø femte-kø} { :navn "fejl-kø" :kø fejl-kø} { :navn "slut-liste" :kø slut-liste}]
    :dæmninger  [{
                  :navn     "Dæmning1"
                  :ventetid 1
@@ -73,6 +73,27 @@ i din REPL
    :andre-ting :som-jeg-har-glemt
    })
 
+(defn create-logging-solution [køer ticker slut-liste]
+  {:tick @ticker
+   :avg  (int (statistik/beregn-gennemsnit @slut-liste 10))
+   :køer {}
+   :k2 {
+          :fejl-kø    {:antal (count @fejl-kø)}
+          :første-kø  {:antal (count @første-kø)}
+          :anden-kø   {
+                       :antal (count @anden-kø)
+                       :avg (statistik/beregn-gennemsnit @anden-kø)
+                       }
+          :tredie-kø  {:antal (count @tredie-kø)
+                       :avg (statistik/beregn-gennemsnit @tredie-kø)}
+          :fjerde-kø  {:antal (count @fjerde-kø)
+                       :avg (statistik/beregn-gennemsnit @fjerde-kø)}
+          :femte-kø   {:antal (count @femte-kø)
+                       :avg (statistik/beregn-gennemsnit @femte-kø)}
+          :slut-liste {:antal (count @slut-liste)}}
+   }
+  )
+
 (defn log-udput
   [key atom old-state new-state]
   (let [output {:tick @timer/tick
@@ -103,10 +124,9 @@ i din REPL
   "Det er denne funktion, som skal startes for at alt kører."
 
   (swap! system init-system)
-
   (.start (Thread. timer/start-timer))
-  (add-watch timer/tick :log log-udput)
 
+  (add-watch timer/tick :log log-udput)
   (daemning/skovarbejder 0 "Skovarbejder" fejl-kø første-kø nil false)
   (map daemning/dæmning (:dæmninger @system))
   )
