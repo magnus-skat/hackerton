@@ -22,54 +22,60 @@ i din REPL
 (def fjerde-kø (atom (queue/a-queue [])))                   ;; Kø'en der hører til den fjerde dæmning.
 (def femte-kø (atom (queue/a-queue [])))                    ;; Kø'en der hører til den femte dæmning.
 (def fejl-kø (atom (queue/a-queue [])))                     ;; Den foreste kø, som alle dæmninger smider en træstamme i, hvis der er en fejl
-(def slut-liste (atom (list)))                              ;; Den sidste kø, som alle træstammer havner i
+(def slut-liste (atom (vector)))                            ;; Den sidste kø, som alle træstammer havner i
+(def fejl-liste (atom (vector)))                            ;; En liste hvor alle fejlet stammer bliver noteret
 ;; Er der flere køer skal de navngives og puttes på denne liste.
 
 (defn init-system
   [_]
   {
-
-   :køer       [{:navn "første-kø" :kø første-kø} {:navn "anden-kø" :kø anden-kø} {:kø tredie-kø :navn "tredie-kø"} { :navn "fjerde-kø" :kø fjerde-kø} { :navn "femte-kø" :kø femte-kø} { :navn "fejl-kø" :kø fejl-kø} { :navn "slut-liste" :kø slut-liste}]
+   :køer       [{:navn "første-kø" :kø første-kø} {:navn "anden-kø" :kø anden-kø} {:kø tredie-kø :navn "tredie-kø"} {:navn "fjerde-kø" :kø fjerde-kø} {:navn "femte-kø" :kø femte-kø} {:navn "fejl-kø" :kø fejl-kø} {:navn "slut-liste" :kø slut-liste}]
    :dæmninger  [{
-                 :navn     "Dæmning1"
-                 :ventetid 1
-                 :ind-kø   første-kø
-                 :ud-kø    anden-kø
-                 :fejlkø   fejl-kø
-                 :sidste   false
+                 :navn       "Dæmning1"
+                 :ventetid   1
+                 :ind-kø     første-kø
+                 :ud-kø      anden-kø
+                 :fejl-kø    fejl-kø
+                 :fejl-liste fejl-liste
+                 :sidste     false
                  }
                 {
-                 :navn     "Dæmning2"
-                 :ventetid 3
-                 :ind-kø   anden-kø
-                 :ud-kø    tredie-kø
-                 :fejlkø   fejl-kø
-                 :sidste   false
+                 :navn       "Dæmning2"
+                 :ventetid   3
+                 :ind-kø     anden-kø
+                 :ud-kø      tredie-kø
+                 :fejl-kø    fejl-kø
+                 :fejl-liste fejl-liste
+                 :sidste     false
                  }
                 {
-                 :navn     "Dæmning3"
-                 :ventetid 2
-                 :ind-kø   tredie-kø
-                 :ud-kø    fjerde-kø
-                 :fejlkø   fejl-kø
-                 :sidste   false
+                 :navn       "Dæmning3"
+                 :ventetid   2
+                 :ind-kø     tredie-kø
+                 :ud-kø      fjerde-kø
+                 :fejl-kø    fejl-kø
+                 :fejl-liste fejl-liste
+                 :sidste     false
                  }
                 {
-                 :navn     "Dæmning4"
-                 :ventetid 5
-                 :ind-kø   fjerde-kø
-                 :ud-kø    femte-kø
-                 :fejlkø   fejl-kø
-                 :sidste   false
+                 :navn       "Dæmning4"
+                 :ventetid   5
+                 :ind-kø     fjerde-kø
+                 :ud-kø      femte-kø
+                 :fejl-kø    fejl-kø
+                 :fejl-liste fejl-liste
+                 :sidste     false
                  }
                 {
-                 :navn     "Dæmning5"
-                 :ventetid 2
-                 :ind-kø   femte-kø
-                 :ud-kø    slut-liste
-                 :fejlkø   fejl-kø
-                 :sidste   true
+                 :navn       "Dæmning5"
+                 :ventetid   2
+                 :ind-kø     femte-kø
+                 :ud-kø      slut-liste
+                 :fejl-kø    fejl-kø
+                 :fejl-liste fejl-liste
+                 :sidste     true
                  }]
+
    :andre-ting :som-jeg-har-glemt
    })
 
@@ -77,19 +83,19 @@ i din REPL
   {:tick @ticker
    :avg  (int (statistik/beregn-gennemsnit @slut-liste 10))
    :køer {}
-   :k2 {
+   :k2   {
           :fejl-kø    {:antal (count @fejl-kø)}
           :første-kø  {:antal (count @første-kø)}
           :anden-kø   {
                        :antal (count @anden-kø)
-                       :avg (statistik/beregn-gennemsnit @anden-kø)
+                       :avg   (statistik/beregn-gennemsnit @anden-kø)
                        }
           :tredie-kø  {:antal (count @tredie-kø)
-                       :avg (statistik/beregn-gennemsnit @tredie-kø)}
+                       :avg   (statistik/beregn-gennemsnit @tredie-kø)}
           :fjerde-kø  {:antal (count @fjerde-kø)
-                       :avg (statistik/beregn-gennemsnit @fjerde-kø)}
+                       :avg   (statistik/beregn-gennemsnit @fjerde-kø)}
           :femte-kø   {:antal (count @femte-kø)
-                       :avg (statistik/beregn-gennemsnit @femte-kø)}
+                       :avg   (statistik/beregn-gennemsnit @femte-kø)}
           :slut-liste {:antal (count @slut-liste)}}
    }
   )
@@ -103,14 +109,14 @@ i din REPL
                        :første-kø  {:antal (count @første-kø)}
                        :anden-kø   {
                                     :antal (count @anden-kø)
-                                    :avg (statistik/beregn-gennemsnit @anden-kø)
+                                    :avg   (statistik/beregn-gennemsnit @anden-kø)
                                     }
                        :tredie-kø  {:antal (count @tredie-kø)
-                                    :avg (statistik/beregn-gennemsnit @tredie-kø)}
+                                    :avg   (statistik/beregn-gennemsnit @tredie-kø)}
                        :fjerde-kø  {:antal (count @fjerde-kø)
-                                    :avg (statistik/beregn-gennemsnit @fjerde-kø)}
+                                    :avg   (statistik/beregn-gennemsnit @fjerde-kø)}
                        :femte-kø   {:antal (count @femte-kø)
-                                    :avg (statistik/beregn-gennemsnit @femte-kø)}
+                                    :avg   (statistik/beregn-gennemsnit @femte-kø)}
                        :slut-liste {:antal (count @slut-liste)}}
                 }
         ]

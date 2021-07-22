@@ -12,12 +12,12 @@
   {
    ;; id er bare måske ikke så vigtig lige nu, men måske senere, kan det bruges til at logge ting.
    ;; RandomUUID burde være god nok til altid genererer et uniksnummer
-   :id       (UUID/randomUUID)
+   :id        (UUID/randomUUID)
    :starttick tick
-   :sluttick nil
-   :log      [
-              {:event      "fældet"                         ;; Tænkt som et sted, hvor de forskellige dæmninger skriver hvornår de har håndteret stammen.
-               :tick       tick
-               :accesstime (Instant/now)}]
+   :sluttick  nil
+   :log       [
+               {:event      "fældet"                        ;; Tænkt som et sted, hvor de forskellige dæmninger skriver hvornår de har håndteret stammen.
+                :tick       tick
+                :accesstime (Instant/now)}]
    ;; Error er sådan vi afgører om et træ skal foran i køen. Hvis error er sat skal køen, vælge denne stamme først
-   :error    fejlkode})
+   :error     fejlkode})
