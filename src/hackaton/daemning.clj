@@ -49,7 +49,7 @@
 (defn- arbejd
   "Det er her selve arbejdet udføres på et træ Hvis tiden er gået smides det på
    den næste kø, ellers venter vi lidt længere"
-  [{:keys [navn ud-kø fejl-kø fejl-liste fejl-procent]} arbejde new-state]
+  [{:keys [navn ud-kø fejl-kø fejl-liste fejl-procent ind-kø]} arbejde new-state]
   (if (< 0 (:ventetid @arbejde))
     (do
       (println navn " arbejder på " @arbejde)
@@ -82,8 +82,8 @@
                                   :tick       new-state
                                   :accesstime (Instant/now)})
             ]
-        (swap! ind-kø pop)     ;; Fjern træet fra ind-køen.
-        (swap! ud-kø conj træ) ;; Tilføj det til næste kø
+        (swap! ind-kø pop)                                  ;; Fjern træet fra ind-køen.
+        (swap! ud-kø conj træ)                              ;; Tilføj det til næste kø
 
         (reset! arbejde nil)
         ))))
@@ -141,22 +141,28 @@
 (defn update-ventetid!
   "Updaterer ventetiden/arbejdstiden for en bestemt dæmning"
   [system nummer ventetid]
-  (timer/start-stop) ;; stop tiden for en sikkerheds skyld
+  (timer/stop)                                              ;; stop tiden for en sikkerheds skyld
+  (Thread/sleep @timer/ventetid)                            ;; vent på at alle tråde er færdige
   (swap! system assoc-in [:dæmninger nummer :ventetid] ventetid) ;; opdater ventetiden på dæmningen
-  (byg-dæmning! ((@system :dæmninger) nummer)) ;; gen-start funktionen der kører på dæmningen
-  (timer/start-stop) ;; Start tiden igen
+  (byg-dæmning! ((@system :dæmninger) nummer))              ;; gen-start funktionen der kører på dæmningen
+  (timer/start)                                             ;; Start tiden igen
   )
 
 
 (defn tilføj-dæmning!
   [dæmning system]
-
-  (timer/start-stop) ;; stop uret, så der ikke kommer konflikter
-  (def antal-dæmninger (:antal-dæmninger @system))
-  (def sidste-navn (:navn (last (:dæmninger @system))))
-  (Thread/sleep @timer/ventetid) ;; vent på at alle tråde er færdige
-  (remove-watch timer/tick (keyword sidste-navn)) ;; Stop den gamle function som kørte
-
-  (swap! system update-in [:dæmninger (- antal-dæmninger 1) :sidste?] not) ;;
+  (timer/stop)                                              ;; stop uret, så der ikke kommer konflikter
+  (Thread/sleep @timer/ventetid)                          ;; vent på at alle tråde er færdige
+  (let [
+        antal-dæmninger (:antal-dæmninger @system)
+        sidste-navn (:navn (last (:dæmninger @system)))
+        ]
+    (remove-watch timer/tick (keyword sidste-navn))         ;; Stop den gamle funktion som kørte
+    (swap! system update-in [:dæmninger (- antal-dæmninger 1) :sidste?] not) ;;
+    (swap! system assoc-in [:dæmninger (- antal-dæmninger 1) :ud-kø] (dæmning :ind-kø))
+    (swap! system update :dæmninger conj (dæmning) )
+    (map byg-dæmning! (@system :dæmninger))
+    )
+  (timer/start)                                             ;; Start tiden igen
   )
 
