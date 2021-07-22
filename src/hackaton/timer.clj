@@ -33,6 +33,18 @@ andre tråde så abonnerer på via en watcher, og når der er kommet et 'tick', 
   (println "Starter eller stopper timeren")
   )
 
+(defn start
+  []
+  (reset! pause false)
+  (println "Starter timeren")
+  )
+
+(defn stop
+  []
+  (reset! pause true)
+  (println "Stopper timeren")
+  )
+
 (defn langsomt
   []
   (reset! ventetid 5000)
