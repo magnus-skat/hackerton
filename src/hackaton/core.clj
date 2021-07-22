@@ -160,9 +160,10 @@ i din REPL
   "Det er denne funktion, som skal startes for at alt kører."
 
   (swap! system init-system)
-  (.start (Thread. timer/start-timer))
+  (.start (Thread. timer/start-timer)) ;; kan kaldes med eller uden en værdi. Hvis uden er standard 250 ticks
 
   (add-watch timer/tick :log log-udput)
+
   (daemning/skovarbejder 0 "Skovarbejder" fejl-kø første-kø nil false)
   (map daemning/byg-dæmning! (:dæmninger @system))
   )
