@@ -9,4 +9,4 @@
                  [shams/priority-queue "0.1.2"]
                  ]
   :repl-options {:init-ns hackaton.core}
-  :source-paths ["src/"])
+  :source-paths ["src"])

@@ -5,5 +5,5 @@
  :dependencies [[reagent "1.0.0-alpha2"]]
  :builds       {:app {:target     :browser
                       :output-dir "public/scripts/"
-                      :modules    {:core {:init-fn hackaton.app/run}}
-                      :devtools   {:after-load hackaton.app/reload}}}}
+                      :modules    {:core {:init-fn web.app/run}}
+                      :devtools   {:after-load web.app/reload}}}}
