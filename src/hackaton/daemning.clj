@@ -91,6 +91,8 @@
 (defn- skab-daemning-funktion
   "Returnerer den funktion, som skal køres som en watcher"
   [{:keys [navn ud-kø ind-kø ventetid sidste? kø-størrelse] :as dæmning}]
+  (println "Skab dæmning kaldt: navn" navn)
+  (println "Skab dæmning kaldt: ind-kø" ind-kø)
   (let [arbejde (atom nil)
         funktion (fn
                    [key atom old-state new-state]
@@ -132,9 +134,8 @@
 
 (defn byg-dæmning!
   [dæmning]
-  (let [
-        funktion (skab-daemning-funktion dæmning)
-        ]
+  (println "byg dæmninger")
+  (let [funktion (skab-daemning-funktion dæmning)]
     (add-watch timer/tick (keyword (:navn dæmning)) funktion)))
 
 
@@ -145,24 +146,6 @@
   (Thread/sleep @timer/ventetid)                            ;; vent på at alle tråde er færdige
   (swap! system assoc-in [:dæmninger nummer :ventetid] ventetid) ;; opdater ventetiden på dæmningen
   (byg-dæmning! ((@system :dæmninger) nummer))              ;; gen-start funktionen der kører på dæmningen
-  (timer/start)                                             ;; Start tiden igen
-  )
-
-
-(defn tilføj-dæmning!
-  [dæmning system]
-  (timer/stop)                                              ;; stop uret, så der ikke kommer konflikter
-  (Thread/sleep @timer/ventetid)                          ;; vent på at alle tråde er færdige
-  (let [
-        antal-dæmninger (:antal-dæmninger @system)
-        sidste-navn (:navn (last (:dæmninger @system)))
-        ]
-    (remove-watch timer/tick (keyword sidste-navn))         ;; Stop den gamle funktion som kørte
-    (swap! system update-in [:dæmninger (- antal-dæmninger 1) :sidste?] not) ;;
-    (swap! system assoc-in [:dæmninger (- antal-dæmninger 1) :ud-kø] (dæmning :ind-kø))
-    (swap! system update :dæmninger conj (dæmning) )
-    (map byg-dæmning! (@system :dæmninger))
-    )
   (timer/start)                                             ;; Start tiden igen
   )
 
