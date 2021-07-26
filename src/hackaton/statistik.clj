@@ -10,7 +10,8 @@
     (/ (reduce + coll) (count coll))))
 
 (defn træ-alder [træ]
-  (- (:sluttick træ) (:starttick træ))
+  (- (get træ :sluttick 0)
+     (get træ :starttick 0))
   )
 
 (defn beregn-gennemsnit

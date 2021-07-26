@@ -19,9 +19,10 @@ i din REPL
 (def første-kø (atom (queue/a-queue [])))                   ;; Kø'en der hører til den første dæmning.
 (def anden-kø (atom (queue/a-queue [])))                    ;; Kø'en der hører til den anden dæmning.
 (def tredie-kø (atom (queue/a-queue [])))                   ;; Kø'en der hører til den tredje dæmning.
-(def fjerde-kø (atom (queue/a-queue [])))                 ;; Kø'en der hører til den fjerde dæmning.
-(def femte-kø (atom (queue/a-queue [])))                  ;; Kø'en der hører til den femte dæmning.
+(def fjerde-kø (atom (queue/a-queue [])))                   ;; Kø'en der hører til den fjerde dæmning.
+(def femte-kø (atom (queue/a-queue [])))                    ;; Kø'en der hører til den femte dæmning.
 (def fejl-kø (atom (queue/a-queue [])))                     ;; Den foreste kø, som alle dæmninger smider en træstamme i, hvis der er en fejl
+
 (def slut-liste (atom (vector)))                            ;; Den sidste kø, som alle træstammer havner i
 (def fejl-liste (atom (vector)))                            ;; En liste hvor alle fejlet træer bliver noteret.
 
@@ -30,7 +31,8 @@ i din REPL
 (defn init-system
   [_]
   {
-   :køer            [{:navn "første-kø" :kø første-kø} {:navn "anden-kø" :kø anden-kø} {:kø tredie-kø :navn "tredie-kø"} {:navn "fejl-kø" :kø fejl-kø} {:navn "slut-liste" :kø slut-liste}]
+   :køer            [{:navn "første-kø" :kø @første-kø} {:navn "anden-kø" :kø @anden-kø} {:kø @tredie-kø :navn "tredie-kø"}]
+   :special-køer    [{:navn "fejl-kø" :kø @fejl-kø} {:navn "slut-liste" :kø @slut-liste}]
    :dæmninger       [{
                       :navn         "Dæmning1"
                       :ventetid     1
@@ -54,43 +56,42 @@ i din REPL
                       :sidste?      false
                       }
                      {
-                      :navn       "Dæmning3"
-                      :ventetid   2
-                      :ind-kø     tredie-kø
-                      :ud-kø      fjerde-kø
-                      :fejl-kø    fejl-kø
-                      :fejl-liste fejl-liste
+                      :navn         "Dæmning3"
+                      :ventetid     2
+                      :ind-kø       tredie-kø
+                      :ud-kø        fjerde-kø
+                      :fejl-kø      fejl-kø
+                      :fejl-liste   fejl-liste
                       :fejl-procent 5
                       :kø-størrelse 12
-                      :sidste?     false
+                      :sidste?      false
                       }
                      {
-                      :navn       "Dæmning4"
-                      :ventetid   5
-                      :ind-kø     fjerde-kø
-                      :ud-kø      femte-kø
-                      :fejl-kø    fejl-kø
-                      :fejl-liste fejl-liste
+                      :navn         "Dæmning4"
+                      :ventetid     5
+                      :ind-kø       fjerde-kø
+                      :ud-kø        femte-kø
+                      :fejl-kø      fejl-kø
+                      :fejl-liste   fejl-liste
                       :fejl-procent 5
                       :kø-størrelse 12
-                      :sidste?     false
+                      :sidste?      false
                       }
                      {
-                      :navn       "Dæmning5"
-                      :ventetid   2
-                      :ind-kø     femte-kø
-                      :ud-kø      slut-liste
-                      :fejl-kø    fejl-kø
-                      :fejl-liste fejl-liste
+                      :navn         "Dæmning5"
+                      :ventetid     2
+                      :ind-kø       femte-kø
+                      :ud-kø        slut-liste
+                      :fejl-kø      fejl-kø
+                      :fejl-liste   fejl-liste
                       :fejl-procent 5
                       :kø-størrelse 12
-                      :sidste?     true
+                      :sidste?      true
                       }
                      ]
    :antal-dæmninger 5
    :andre-ting      :som-jeg-har-glemt
    })
-
 
 (defn init-system2
   [_]
@@ -128,6 +129,15 @@ i din REPL
    :andre-ting      :som-jeg-har-glemt
    })
 
+(defn tilføj-kø
+  [navn]
+  (let [
+        kø (atom (queue/a-queue []))
+        ]
+    (swap! system update :køer conj {:navn navn :kø kø})
+    kø
+    )
+  )
 
 (defn create-logging-solution [køer ticker slut-liste]
   {:tick @ticker
@@ -147,7 +157,10 @@ i din REPL
 
 (defn log-udput
   [key atom old-state new-state]
-  (let [output {:tick @timer/tick
+  (let [
+        s (fn [element] {(keyword (:navn element)) {:antal (count element)} :ting (type (:kø element)) })
+
+        output {:tick @timer/tick
                 :avg  (int (statistik/beregn-gennemsnit @slut-liste 10))
                 :køer {
                        :fejl-kø    {:antal (count @fejl-kø)}
@@ -158,6 +171,13 @@ i din REPL
                                     }
                        :tredie-kø  {:antal (count @tredie-kø)
                                     :avg   (statistik/beregn-gennemsnit @tredie-kø)}
+
+                       :fjerde-kø  {:antal (count @fjerde-kø)
+                                    :avg   (statistik/beregn-gennemsnit @fjerde-kø)}
+
+                       :femte-kø  {:antal (count @femte-kø)
+                                    :avg   (statistik/beregn-gennemsnit @femte-kø)}
+
                        :slut-liste {:antal (count @slut-liste)}}
                 }
         ]
@@ -165,7 +185,6 @@ i din REPL
     (println output)
     (println "*******************")
     ))
-
 
 (defn start-system
   []
@@ -185,8 +204,11 @@ i din REPL
   (Thread/sleep @timer/ventetid)                            ;; vent på at alle tråde er færdige
   (let
     [
+     ny-kø (tilføj-kø (:navn ny-dæmning))
      ny-dæmning (assoc ny-dæmning :ud-kø (:ud-kø (last (:dæmninger @system))))
      ny-dæmning (assoc ny-dæmning :sidste? true)
+     ny-dæmning (assoc ny-dæmning :ind-kø ny-kø)
+
      ]
     (swap! system assoc-in [:dæmninger 1 :sidste?] false)   ;;WS
     (swap! system assoc-in [:dæmninger 1 :ud-kø] (ny-dæmning :ind-kø))
@@ -205,11 +227,10 @@ i din REPL
     {
      :navn         "NyDømning"
      :ventetid     3
-     :fejl-kø      fejl-kø
-     :fejl-liste   fejl-liste
      :fejl-procent 5
-     :ind-kø       tredie-kø
      :kø-størrelse 12
+     :fejl-kø      fejl-kø
+     :slut-liste   slut-liste
      }
     )
   )
