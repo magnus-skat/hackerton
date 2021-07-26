@@ -31,8 +31,6 @@ i din REPL
 (defn init-system
   [_]
   {
-   :køer            [{:navn "første-kø" :kø @første-kø} {:navn "anden-kø" :kø @anden-kø} {:kø @tredie-kø :navn "tredie-kø"}]
-   :special-køer    [{:navn "fejl-kø" :kø @fejl-kø} {:navn "slut-liste" :kø @slut-liste}]
    :dæmninger       [{
                       :navn         "Dæmning1"
                       :ventetid     1
