@@ -93,42 +93,6 @@ i din REPL
    :andre-ting      :som-jeg-har-glemt
    })
 
-(defn init-system2
-  [_]
-  {
-   :køer            [
-                     {:navn "første-kø" :kø første-kø}
-                     {:navn "anden-kø" :kø anden-kø}
-                     {:navn "tredie-kø" :kø tredie-kø}
-                     {:navn "fejl-kø" :kø fejl-kø}
-                     {:navn "slut-liste" :kø slut-liste}]
-   :dæmninger       [{
-                      :navn         "Dæmning1"
-                      :ventetid     1
-                      :ind-kø       første-kø
-                      :ud-kø        anden-kø
-                      :fejl-kø      fejl-kø
-                      :fejl-liste   fejl-liste
-                      :sidste?      false
-                      :fejl-procent 5
-                      :kø-størrelse 12
-                      }
-                     {
-                      :navn         "Dæmning2"
-                      :ventetid     3
-                      :ind-kø       anden-kø
-                      :ud-kø        slut-liste
-                      :fejl-kø      fejl-kø
-                      :fejl-liste   fejl-liste
-                      :fejl-procent 5
-                      :kø-størrelse 12
-                      :sidste?      false
-                      }
-                     ]
-   :antal-dæmninger 2
-   :andre-ting      :som-jeg-har-glemt
-   })
-
 (defn tilføj-kø
   [navn]
   (let [
