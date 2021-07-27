@@ -17,12 +17,12 @@ i din REPL
 (def system (atom {}))
 
 ;; For det første skal vi bruge et par køer.
-(def første-kø (atom (queue/queue [])))                   ;; Kø'en der hører til den første dæmning.
-(def anden-kø (atom (queue/queue [])))                    ;; Kø'en der hører til den anden dæmning.
-(def tredie-kø (atom (queue/queue [])))                   ;; Kø'en der hører til den tredje dæmning.
-(def fjerde-kø (atom (queue/queue [])))                   ;; Kø'en der hører til den fjerde dæmning.
-(def femte-kø (atom (queue/queue [])))                    ;; Kø'en der hører til den femte dæmning.
-(def fejl-kø (atom (queue/queue [])))                     ;; Den foreste kø, som alle dæmninger smider en træstamme i, hvis der er en fejl
+(def første-kø (atom (queue/prioritets-kø [])))                   ;; Kø'en der hører til den første dæmning.
+(def anden-kø (atom (queue/prioritets-kø [])))                    ;; Kø'en der hører til den anden dæmning.
+(def tredie-kø (atom (queue/prioritets-kø [])))                   ;; Kø'en der hører til den tredje dæmning.
+(def fjerde-kø (atom (queue/prioritets-kø [])))                   ;; Kø'en der hører til den fjerde dæmning.
+(def femte-kø (atom (queue/prioritets-kø [])))                    ;; Kø'en der hører til den femte dæmning.
+(def fejl-kø (atom (queue/prioritets-kø [])))                     ;; Den foreste kø, som alle dæmninger smider en træstamme i, hvis der er en fejl
 
 (def slut-liste (atom (vector)))                            ;; Den sidste kø, som alle træstammer havner i
 (def fejl-liste (atom (vector)))                            ;; En liste hvor alle fejlet træer bliver noteret.
@@ -39,9 +39,9 @@ i din REPL
                       :ud-kø        anden-kø
                       :fejl-kø      fejl-kø
                       :fejl-liste   fejl-liste
-                      :sidste?      false
                       :fejl-procent 5
                       :kø-størrelse 12
+                      :sidste?      false
                       }
                      {
                       :navn         "Dæmning2"
@@ -95,7 +95,7 @@ i din REPL
 (defn tilføj-kø
   [navn]
   (let [
-        kø (atom (queue/queue []))
+        kø (atom (queue/prioritets-kø []))
         ]
     (swap! system update :køer conj {:navn navn :kø kø})
     kø
@@ -121,8 +121,6 @@ i din REPL
 (defn log-udput
   [key atom old-state new-state]
   (let [
-        s (fn [element] {(keyword (:navn element)) {:antal (count element)} :ting (type (:kø element))})
-
         output {:tick @timer/tick
                 :avg  (int (statistik/beregn-gennemsnit @slut-liste 10))
                 :køer {
@@ -144,6 +142,7 @@ i din REPL
                        :slut-liste {:antal (count @slut-liste)}}
                 }
         ]
+
     (println "*******************")
     (println output)
     (println "*******************")

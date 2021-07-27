@@ -23,16 +23,10 @@ pop vil returnerer den nye kø, så hvis man skal have data ud, skal man huske a
   error
   )
 
-(defn queue
+(defn prioritets-kø
   ([]
    (pq/priority-queue prioritets-funktion))
   ([elementer]
    (pq/priority-queue prioritets-funktion :elements elementer)
    )
   )
-
-(defn mod-funk [i]
-  (mod i 5)
-  )
-
-#_(def min-kø (atom (queue/queue [(skov/fæld-træ 1 0) (skov/fæld-træ 1 0) (skov/fæld-træ 1 0) (skov/fæld-træ 1 0) (skov/fæld-træ 1 0)])))

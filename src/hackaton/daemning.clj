@@ -5,7 +5,6 @@
            (java.time Instant)
            ))
 
-
 (defn- skab-skovarbejder-funktion
   [_ ud-kø ind-kø kø-størrelse]
   (let [funktion (fn [_ _ _ new-state]
@@ -89,8 +88,6 @@
 (defn- skab-daemning-funktion
   "Returnerer den funktion, som skal køres som en watcher"
   [{:keys [navn ud-kø ind-kø ventetid sidste? kø-størrelse] :as dæmning}]
-  (println "Skab dæmning kaldt: navn" navn)
-  (println "Skab dæmning kaldt: ind-kø" ind-kø)
   (let [arbejde (atom nil)
         funktion (fn
                    [key atom old-state new-state]
@@ -100,42 +97,28 @@
                     old-state, den gamle værdi
                     new-state den nye værdi
                    "
-                   (if (nil? @arbejde)
-                     (if (or sidste? (< (count @ud-kø) kø-størrelse))
-                       (do
-                         (if (peek @ind-kø)
-                           (do
-                             (let [
-                                   træ (peek @ind-kø)       ;; Find det næste træ
+                   (if (nil? @arbejde)                      ;; Hvis der ikke er noget arbejde igang så...
+                     (if (or sidste? (< (count @ud-kø) kø-størrelse)) ;; Hvis det er den sidste dæmning eller hvis der er plads på næste kø
+                       (if (peek @ind-kø)                   ;; Hvis der er noget på ind-køen
+                         (let [
+                               træ (peek @ind-kø)           ;; Find det næste træ
 
-                                   træ (opdater-log træ {:event      (str navn " arbejde startet")
-                                                         :tick       new-state
-                                                         :accesstime (Instant/now)})
-                                   ]
-                               (reset! arbejde {:ventetid ventetid
-                                                :træ      træ})
+                               træ (opdater-log træ {:event      (str navn " arbejde startet")
+                                                     :tick       new-state
+                                                     :accesstime (Instant/now)}) ;; Indsæt data ind i loggen
+                               ]
+                           (reset! arbejde {:ventetid ventetid :træ træ})) ;; Lav noget 'arbejde'
+                         (println "Queue empty, resting"))  ;; Ind-Køen var tom
 
-                               ))
-                           (println "Queue empty, resting")))
-                       (do
-                         (println "Køen er fuld!")
-                         )
-                       )
-                     (do
-                       ;; Arbejde er not nil
-                       (arbejd dæmning arbejde new-state)
-                       )
-                     ))]
-    funktion
-    )
-  )
+                       (println "Køen er fuld!"))           ;; Ud-køen var fuld.
+                     (arbejd dæmning arbejde new-state)))]  ;; Der var arbejde der skulle laves
+    funktion))
 
 (defn byg-dæmning!
   [dæmning]
   (println "byg dæmninger")
   (let [funktion (skab-daemning-funktion dæmning)]
     (add-watch timer/tick (keyword (:navn dæmning)) funktion)))
-
 
 (defn update-ventetid!
   "Updaterer ventetiden/arbejdstiden for en bestemt dæmning"
