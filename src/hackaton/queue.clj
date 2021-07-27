@@ -19,16 +19,20 @@ pop vil returnerer den nye kø, så hvis man skal have data ud, skal man huske a
 (def min-kø (pop min-kø))
 "
 
+(defn- prioritets-funktion [{:keys [error]}]
+  error
+  )
+
 (defn queue
-  ([] ((pq/priority-queue #(:error %))))
-  ([coll]
-   (let [kø (pq/priority-queue #(:error %)) ]
-     reduce conj kø coll)))
+  ([]
+   (pq/priority-queue prioritets-funktion))
+  ([elementer]
+   (pq/priority-queue prioritets-funktion :elements elementer)
+   )
+  )
 
-(defn a-queue
-  ([] (PersistentQueue/EMPTY))
-  ([coll]
-   (reduce conj PersistentQueue/EMPTY coll)))
+(defn mod-funk [i]
+  (mod i 5)
+  )
 
-#_(def min-kø (atom (a-queue [(skov/fæld-træ 1 0) (skov/fæld-træ 1 0) (skov/fæld-træ 1 0) (skov/fæld-træ 1 0) (skov/fæld-træ 1 0)])))
-
+#_(def min-kø (atom (queue/queue [(skov/fæld-træ 1 0) (skov/fæld-træ 1 0) (skov/fæld-træ 1 0) (skov/fæld-træ 1 0) (skov/fæld-træ 1 0)])))

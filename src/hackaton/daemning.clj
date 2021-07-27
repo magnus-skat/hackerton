@@ -15,14 +15,12 @@
                          (do
                            (let [træ (peek @ind-kø)
                                  træ (assoc træ :error 0)]
-
                              (swap! ud-kø conj træ)
                              (swap! ind-kø pop)
                              ))
-                         (do
-                           (let [træ (hackaton.skov/fæld-træ 0, new-state)]
-                             (swap! ud-kø conj træ)
-                             ))))
+
+                         (swap! ud-kø conj (hackaton.skov/fæld-træ 0, new-state))
+                         ))
                      (println "Køen er fuld!")))]
     funktion
     ))
