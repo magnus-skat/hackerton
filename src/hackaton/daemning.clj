@@ -64,12 +64,13 @@
                                    :accesstime (Instant/now)})
              ]
         (println "Arbejdet fejlet")
+        #_(timer/stop)
         (swap! fejl-kø conj træ)
         (swap! fejl-liste conj {
                                 :tick new-state
                                 :træ  (:id træ)
+                                :dæmning  navn
                                 })
-
         (reset! arbejde nil)
         )
       (let [
@@ -95,8 +96,7 @@
                     key er navnet som den fik ved oprettelsen
                     atom, atomeet som er ændret
                     old-state, den gamle værdi
-                    new-state den nye værdi
-                   "
+                    new-state den nye værdi"
                    (if (nil? @arbejde)                      ;; Hvis der ikke er noget arbejde igang så...
                      (if (or sidste? (< (count @ud-kø) kø-størrelse)) ;; Hvis det er den sidste dæmning eller hvis der er plads på næste kø
                        (if (peek @ind-kø)                   ;; Hvis der er noget på ind-køen
@@ -106,6 +106,8 @@
                                træ (opdater-log træ {:event      (str navn " arbejde startet")
                                                      :tick       new-state
                                                      :accesstime (Instant/now)}) ;; Indsæt data ind i loggen
+                               _ (println træ)
+                               træ (assoc træ :error 0)
                                ]
                            (reset! arbejde {:ventetid ventetid :træ træ})) ;; Lav noget 'arbejde'
                          (println "Queue empty, resting"))  ;; Ind-Køen var tom

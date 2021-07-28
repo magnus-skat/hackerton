@@ -17,12 +17,12 @@ i din REPL
 (def system (atom {}))
 
 ;; For det første skal vi bruge et par køer.
-(def første-kø (atom (queue/prioritets-kø [])))                   ;; Kø'en der hører til den første dæmning.
-(def anden-kø (atom (queue/prioritets-kø [])))                    ;; Kø'en der hører til den anden dæmning.
-(def tredie-kø (atom (queue/prioritets-kø [])))                   ;; Kø'en der hører til den tredje dæmning.
-(def fjerde-kø (atom (queue/prioritets-kø [])))                   ;; Kø'en der hører til den fjerde dæmning.
-(def femte-kø (atom (queue/prioritets-kø [])))                    ;; Kø'en der hører til den femte dæmning.
-(def fejl-kø (atom (queue/prioritets-kø [])))                     ;; Den foreste kø, som alle dæmninger smider en træstamme i, hvis der er en fejl
+(def første-kø (atom (queue/prioritets-kø [])))             ;; Kø'en der hører til den første dæmning.
+(def anden-kø (atom (queue/prioritets-kø [])))              ;; Kø'en der hører til den anden dæmning.
+(def tredie-kø (atom (queue/prioritets-kø [])))             ;; Kø'en der hører til den tredje dæmning.
+(def fjerde-kø (atom (queue/prioritets-kø [])))             ;; Kø'en der hører til den fjerde dæmning.
+(def femte-kø (atom (queue/prioritets-kø [])))              ;; Kø'en der hører til den femte dæmning.
+(def fejl-kø (atom (queue/prioritets-kø [])))               ;; Den foreste kø, som alle dæmninger smider en træstamme i, hvis der er en fejl
 
 (def slut-liste (atom (vector)))                            ;; Den sidste kø, som alle træstammer havner i
 (def fejl-liste (atom (vector)))                            ;; En liste hvor alle fejlet træer bliver noteret.
@@ -48,7 +48,7 @@ i din REPL
                       :ventetid     3
                       :ind-kø       anden-kø
                       :ud-kø        tredie-kø
-                      :fejl-kø      fejl-kø
+                      :fejl-kø      første-kø
                       :fejl-liste   fejl-liste
                       :fejl-procent 5
                       :kø-størrelse 12
@@ -59,7 +59,7 @@ i din REPL
                       :ventetid     2
                       :ind-kø       tredie-kø
                       :ud-kø        fjerde-kø
-                      :fejl-kø      fejl-kø
+                      :fejl-kø      første-kø
                       :fejl-liste   fejl-liste
                       :fejl-procent 5
                       :kø-størrelse 12
@@ -70,7 +70,7 @@ i din REPL
                       :ventetid     5
                       :ind-kø       fjerde-kø
                       :ud-kø        femte-kø
-                      :fejl-kø      fejl-kø
+                      :fejl-kø      anden-kø
                       :fejl-liste   fejl-liste
                       :fejl-procent 5
                       :kø-størrelse 12
@@ -81,7 +81,7 @@ i din REPL
                       :ventetid     2
                       :ind-kø       femte-kø
                       :ud-kø        slut-liste
-                      :fejl-kø      fejl-kø
+                      :fejl-kø      anden-kø
                       :fejl-liste   fejl-liste
                       :fejl-procent 5
                       :kø-størrelse 12
@@ -120,8 +120,14 @@ i din REPL
 
 (defn log-udput
   [key atom old-state new-state]
+  "agents skal have fire argumenter.
+   key er navnet som den fik ved oprettelsen
+   atom, atomeet som er ændret
+   old-state, den gamle værdi
+   new-state den nye værdi"
+
   (let [
-        output {:tick @timer/tick
+        output {:tick new-state
                 :avg  (int (statistik/beregn-gennemsnit @slut-liste 10))
                 :køer {
                        :fejl-kø    {:antal (count @fejl-kø)}
@@ -161,6 +167,7 @@ i din REPL
   )
 
 (defn tilføj-dæmning!
+  "Tilføjer en dæmning til systemet. Vil blive tilføjet til sidst i rækken"
   [ny-dæmning]
   (timer/stop)                                              ;; stop uret, så der ikke kommer konflikter
   (Thread/sleep @timer/ventetid)                            ;; vent på at alle tråde er færdige
@@ -179,7 +186,6 @@ i din REPL
     (daemning/byg-dæmning! ny-dæmning)
     (daemning/byg-dæmning! (get-in @system [:dæmninger 1]))
     )
-
   (timer/start)                                             ;; Start tiden igen
   )
 

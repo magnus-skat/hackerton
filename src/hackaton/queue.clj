@@ -1,7 +1,7 @@
 (ns hackaton.queue
   (:require [shams.priority-queue :as pq]
             [hackaton.skov :as skov])
-  (:import (clojure.lang PersistentQueue)))
+  )
 
 "https://www.tutorialspoint.com/clojure/clojure_watchers.htm "
 "https://cljdoc.org/d/shams/priority-queue/0.1.2/doc/readme"

@@ -11,6 +11,7 @@ andre tråde så abonnerer på via en watcher, og når der er kommet et 'tick', 
 (def ventetid (atom 1000))                                  ;; Antal millisekunder som timeren skal sove, inden den sendet et nyt tick ud
 
 (defn start-timer
+  "Starter uret. Default er 250 ticks, men kan sættes til noget andet "
   ([] (start-timer 250))
   ([stop-tick]
    (while (< @tick stop-tick)
@@ -24,7 +25,7 @@ andre tråde så abonnerer på via en watcher, og når der er kommet et 'tick', 
      ))
   )
 
-;;; Disse tre funktioner, ændre tiden mellem ticks. Kan kaldes fra REPL, med
+;; Disse tre funktioner, ændre tiden mellem ticks. Kan kaldes fra REPL, med
 ;; (timer/langsomt) Virker også når systemet kører.
 
 (defn start-stop
@@ -46,16 +47,25 @@ andre tråde så abonnerer på via en watcher, og når der er kommet et 'tick', 
   )
 
 (defn langsomt
+  "Sætter uret til langsom hastighed"
   []
   (reset! ventetid 5000)
   )
 
 (defn hurtigt
+  "Sætter uret til hurtig hastighed"
   []
   (reset! ventetid 500)
   )
 
 (defn normal
+  "Sætter uret til normal hastighed"
   []
   (reset! ventetid 1000)
+  )
+
+(defn single-tick
+  "Får uret til at ticke en enkelt gang. "
+  []
+  (swap! tick inc)
   )
