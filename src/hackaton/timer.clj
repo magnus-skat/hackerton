@@ -9,21 +9,17 @@ andre tråde så abonnerer på via en watcher, og når der er kommet et 'tick', 
 (def tick (atom 0))
 (def pause (atom false))                                    ;; Hvis True, skal timere bare noppe
 (def ventetid (atom 1000))                                  ;; Antal millisekunder som timeren skal sove, inden den sendet et nyt tick ud
+(def slut (atom 10000))
 
 (defn start-timer
   "Starter uret. Default er 250 ticks, men kan sættes til noget andet "
-  ([] (start-timer 250))
-  ([stop-tick]
-   (while (< @tick stop-tick)
+  []
+ (while (< @tick @slut)
      (if @pause                                             ;; It's time for a nop.
        (Thread/sleep 1000)
        (do
          (Thread/sleep @ventetid)
-         (swap! tick inc)
-         )
-       )
-     ))
-  )
+         (swap! tick inc)))))
 
 ;; Disse tre funktioner, ændre tiden mellem ticks. Kan kaldes fra REPL, med
 ;; (timer/langsomt) Virker også når systemet kører.

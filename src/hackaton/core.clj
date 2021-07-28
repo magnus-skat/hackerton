@@ -129,6 +129,7 @@ i din REPL
   (let [
         output {:tick new-state
                 :avg  (int (statistik/beregn-gennemsnit @slut-liste 10))
+                :median  (int (statistik/beregn-gennemsnit @slut-liste 10))
                 :køer {
                        :fejl-kø    {:antal (count @fejl-kø)}
                        :første-kø  {:antal (count @første-kø)}
