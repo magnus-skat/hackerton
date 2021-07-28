@@ -7,6 +7,9 @@
                  [org.clojure/tools.logging "0.3.1"]
                  ;; Prioritets kø
                  [shams/priority-queue "0.1.2"]
+                 ;; Shadow-cljs
+                 [reagent "1.1.0"]
+                 [thheller/shadow-cljs "2.15.2"]
                  ]
   :repl-options {:init-ns hackaton.core}
   :source-paths ["src"])

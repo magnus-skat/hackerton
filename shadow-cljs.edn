@@ -1,8 +1,8 @@
-{:source-paths ["src"]
- :dev-http     {8082 "public"}
- :main         'hackaton.app
- :nrepl        {:port 55555}
- :dependencies [[reagent "1.0.0-alpha2"]]
+{:lein true
+
+ :dev-http {8081 "public"}
+ :nrepl {:port 55555}
+
  :builds       {:app {:target     :browser
                       :output-dir "public/scripts/"
                       :modules    {:core {:init-fn web.app/run}}

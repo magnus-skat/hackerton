@@ -1,6 +1,5 @@
 1 (ns hackaton.core
-    (:require [shams.priority-queue :as pq]
-              [hackaton.queue :as queue]
+    (:require [hackaton.queue :as queue]
               [hackaton.daemning :as daemning]
               [hackaton.timer :as timer]
               [hackaton.statistik :as statistik]
