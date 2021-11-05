@@ -110,3 +110,8 @@ i din REPL
   (daemning/skovarbejder 0 "Skovarbejder" fejl-kø første-kø nil false)
   (map daemning/dæmning (:dæmninger @system))
   )
+
+(defn -main
+  []
+  (start-system)
+  )
